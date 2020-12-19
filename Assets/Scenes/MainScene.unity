@@ -304,8 +304,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 805110457}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 50, y: -0.5, z: 50}
-  m_LocalScale: {x: 100, y: 1, z: 100}
+  m_LocalPosition: {x: 10, y: -0.5, z: 10}
+  m_LocalScale: {x: 20, y: 1, z: 20}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -386,13 +386,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.40465656, y: -0, z: -0, w: 0.91446877}
+  m_LocalPosition: {x: 9.81, y: 15.5, z: -6.55}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 47.739, y: 0, z: 0}
 --- !u!1 &1494799149
 GameObject:
   m_ObjectHideFlags: 0
@@ -402,6 +402,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1494799151}
+  - component: {fileID: 1494799153}
   - component: {fileID: 1494799152}
   - component: {fileID: 1494799150}
   m_Layer: 0
@@ -423,8 +424,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c772c8fef2beb64ba6999ecef158e86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 8242119779928304451, guid: c13b9445f1b4c5a43bfbab684f450799, type: 3}
-  numOfEnemies: 0
+  redEnemyPrefab: {fileID: 8242119779928304451, guid: c13b9445f1b4c5a43bfbab684f450799, type: 3}
+  blueEnemyPrefab: {fileID: 8242119779928304451, guid: d83ffa00b87487d44bf4f2cf4f4c5394, type: 3}
+  enemies: {fileID: 0}
+  currentWaveName: 
 --- !u!4 &1494799151
 Transform:
   m_ObjectHideFlags: 0
@@ -451,8 +454,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1c75eb030854f3488dff8c668576618, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tile: {fileID: 6995187949248856614, guid: 164c3f828245cd34cbc691f870298746, type: 3}
-  rows: 4
-  columns: 3
-  rowGap: 1
-  colGap: 1
+  tilePrefab: {fileID: 6995187949248856614, guid: 164c3f828245cd34cbc691f870298746, type: 3}
+  entrancePrefab: {fileID: 8115474097331632150, guid: df1dec382a9fe624cb76fb6ad90a6248, type: 3}
+  checkpointPrefab: {fileID: 8115474097331632150, guid: 05a0de531078a8844b3cfefb77d46aa1, type: 3}
+  exitPrefab: {fileID: 8115474097331632150, guid: 984aed694c20b09448f7941a7f1ece6d, type: 3}
+  rows: 20
+  columns: 20
+  rowOffset: 0.5
+  colOffset: 0.5
+  rowGap: 0
+  colGap: 0
+  checkpoints: {fileID: 0}
+  tileLength: 0
+  tileWidth: 0
+--- !u!114 &1494799153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494799149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01742ea543aa9754b99bf9aece3705ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentMenuState: 0

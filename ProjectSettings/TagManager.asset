@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Tile
+  - Checkpoint
+  - Entrance
+  - Exit
+  - Enemy
   layers:
   - Default
   - TransparentFX
