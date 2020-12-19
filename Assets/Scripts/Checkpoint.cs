@@ -6,6 +6,7 @@ public class Checkpoint : MonoBehaviour
 {
     public CheckpointType type;
     public int num;
+    public GameObject nextCheckpoint;
     
     // Start is called before the first frame update
     void Start()

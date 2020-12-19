@@ -12,6 +12,7 @@ public class Wave
 	private bool hasSpawned;
 	private bool hasCleared;
 	private int numSpawned;
+	private int numLeft;
 	private Wave nextWave;
 	#endregion
 
@@ -22,6 +23,8 @@ public class Wave
 	public float SpawnDelay { get { return spawnDelay; } }
 	public bool HasSpawned { get { return hasSpawned; } }
 	public bool HasCleared { get { return hasCleared; } }
+	public int EnemiesSpawned { get { return numSpawned; } }
+	public int EnemiesLeft { get { return numLeft; } }
 	public Wave NextWave { get { return nextWave; } }
 	#endregion
 
@@ -39,6 +42,7 @@ public class Wave
 		hasSpawned = false;
 		hasCleared = false;
 		numSpawned = 0;
+		numLeft = 0;
 	}
 	#endregion
 
@@ -69,8 +73,14 @@ public class Wave
 		}
 
 		numSpawned++;
+		numLeft++;
+	}
 
-		if(numSpawned == numOfEnemies)
+	public void EnemyRemoved()
+	{
+		numLeft--;
+
+		if(numLeft == 0)
 			hasCleared = true;
 	}
 	#endregion

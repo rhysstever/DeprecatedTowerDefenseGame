@@ -35,27 +35,50 @@ public class LevelManager : MonoBehaviour
         tileLength = tilePrefab.GetComponent<BoxCollider>().size.x;
         tileWidth = tilePrefab.GetComponent<BoxCollider>().size.z;
 
-        // Create Tiles
-        List<Vector2> coords = new List<Vector2>();
-        coords.Add(new Vector2(4, 2));
-        coords.Add(new Vector2(4, 3));
-        coords.Add(new Vector2(4, 4));
-        coords.Add(new Vector2(4, 5));
-        coords.Add(new Vector2(4, 6));
-        CreateTiles(coords);
-
-        // Create Checkpoints
-        // Creates an empty, parent GO to hold all of the checkpoints in the scene
-        checkpoints = new GameObject("checkpoints");
-        CreateCheckpoint(checkpoints, new Vector2(4, 2), CheckpointType.Entrance);
-        CreateCheckpoint(checkpoints, new Vector2(4, 4));
-        CreateCheckpoint(checkpoints, new Vector2(4, 6), CheckpointType.Exit);        
+        // Create tiles and checkpoints
+        TileCreation();
+        CheckpointCreation();
     }
 
     // Update is called once per frame
     void Update()
     {
 
+    }
+
+    /// <summary>
+    /// A method to hold all creation of tiles
+    /// </summary>
+    void TileCreation()
+	{
+        // Create a list to hold all of the coordinates of the blank spaces
+        List<Vector2> coords = new List<Vector2>();
+        coords.Add(new Vector2(4, 2));      // to be entrance
+        coords.Add(new Vector2(4, 3));
+        coords.Add(new Vector2(4, 4));
+        coords.Add(new Vector2(4, 5));
+        coords.Add(new Vector2(4, 6));
+        coords.Add(new Vector2(4, 7));
+        coords.Add(new Vector2(4, 8));
+        coords.Add(new Vector2(4, 9));
+        coords.Add(new Vector2(4, 10));     // to be checkpoint 1
+        coords.Add(new Vector2(5, 10));
+        coords.Add(new Vector2(6, 10));
+        coords.Add(new Vector2(7, 10));
+        coords.Add(new Vector2(8, 10));
+        coords.Add(new Vector2(9, 10));
+        coords.Add(new Vector2(10, 10));    // to be checkpoint 2
+        coords.Add(new Vector2(10, 9));
+        coords.Add(new Vector2(10, 8));
+        coords.Add(new Vector2(10, 7));
+        coords.Add(new Vector2(10, 6));
+        coords.Add(new Vector2(10, 5));
+        coords.Add(new Vector2(10, 4));
+        coords.Add(new Vector2(10, 3));
+        coords.Add(new Vector2(10, 2));     // to be exit
+
+        // Create tiles objects
+        CreateTiles(coords);
     }
 
     /// <summary>
@@ -118,13 +141,30 @@ public class LevelManager : MonoBehaviour
     }
 
     /// <summary>
+    /// A method to hold all creation of checkpoints
+    /// </summary>
+    void CheckpointCreation()
+	{
+        // Create Checkpoints
+        // Creates an empty, parent GO to hold all of the checkpoints in the scene
+        checkpoints = new GameObject("checkpoints");
+        
+        GameObject exit = CreateCheckpoint(checkpoints, new Vector2(10, 2), CheckpointType.Exit, null);
+        GameObject cp2 = CreateCheckpoint(checkpoints, new Vector2(10, 10), exit);
+        GameObject cp1 = CreateCheckpoint(checkpoints, new Vector2(4, 10), cp2);
+        GameObject entrance = CreateCheckpoint(checkpoints, new Vector2(4, 2), CheckpointType.Entrance, cp1);
+    }
+
+    /// <summary>
     /// Creates a middle checkpoint at a given position
     /// </summary>
     /// <param name="parent">The GO that will hold the checkpoint in the scene</param>
     /// <param name="coordinates">The row and column # of the checkpoint</param>
-    void CreateCheckpoint(GameObject parent, Vector2 coordinates)
+    /// <param name="nextCheckpoint">The checkpoint after the current checkpoint</param>
+    /// <returns>The newly created checkpoint</returns>
+    GameObject CreateCheckpoint(GameObject parent, Vector2 coordinates, GameObject nextCheckpoint)
 	{
-        CreateCheckpoint(parent, coordinates, CheckpointType.Checkpoint);
+        return CreateCheckpoint(parent, coordinates, CheckpointType.Checkpoint, nextCheckpoint);
 	}
 
     /// <summary>
@@ -132,7 +172,9 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     /// <param name="parent">The GO that will hold the checkpoint in the scene</param>
     /// <param name="coordinates">The row and column # of the checkpoint</param>
-    void CreateCheckpoint(GameObject parent, Vector2 coordinates, CheckpointType checkpointType)
+    /// <param name="nextCheckpoint">The checkpoint after the current checkpoint</param>
+    /// <returns>The newly created checkpoint</returns>
+    GameObject CreateCheckpoint(GameObject parent, Vector2 coordinates, CheckpointType checkpointType, GameObject nextCheckpoint)
 	{
         // Calculates the position of the checkpoint based on the row and column numbers given
         Vector3 position = Vector3.zero;
@@ -159,12 +201,16 @@ public class LevelManager : MonoBehaviour
                 break;
         }
 
+        // Returns the new checkpoint early if it is null
         if(newCP == null)
-            return;
+            return newCP;
 
         newCP.GetComponent<Checkpoint>().type = checkpointType;
         newCP.GetComponent<MapObject>().coordinates = coordinates;
         newCP.GetComponent<Checkpoint>().num = (checkpoints.transform.childCount - 1);
+        newCP.GetComponent<Checkpoint>().nextCheckpoint = nextCheckpoint;
+
+        return newCP;
     }
 
     /// <summary>
