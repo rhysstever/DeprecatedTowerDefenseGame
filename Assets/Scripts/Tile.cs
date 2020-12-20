@@ -8,12 +8,16 @@ public class Tile : MonoBehaviour
 	public Material unselectedMat;
 	public Material selectedMat;
 
+	// Set on map load
     public int number;
+
+	// Set at Start()
+	public GameObject tower;
     
     // Start is called before the first frame update
     void Start()
     {
-        
+		tower = null;
     }
 
     // Update is called once per frame

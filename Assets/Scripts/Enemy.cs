@@ -49,12 +49,14 @@ public class Enemy : MonoBehaviour
     /// <returns>The next move of the enemy, scaled to the enemy's movement speed</returns>
     Vector3 NextMoveVec()
 	{
-        Vector3 distToNextCP = currentCheckpoint.transform.position - gameObject.transform.position;
-        distToNextCP.y = 0.0f;
-        distToNextCP.Normalize();
-        distToNextCP *= moveSpeed;
+		// Finds the distance to the next checkpoint, zeros out the y value, normalizes it, 
+		// and then scales it by the enemy's move speed
+        Vector3 distVec = currentCheckpoint.transform.position - gameObject.transform.position;
+        distVec.y = 0.0f;
+        distVec.Normalize();
+        distVec *= moveSpeed;
 
-        return distToNextCP;
+        return distVec;
 	}
     
     /// <summary>
@@ -63,7 +65,7 @@ public class Enemy : MonoBehaviour
     void RotateToNextCP()
     {
         // Calculate the correct rotation, zero-ing out the x and z values 
-        // so the enemy does not tilt in any direction
+        // so it does not tilt in any direction
         gameObject.transform.LookAt(currentCheckpoint.transform);
         Quaternion newQuat = gameObject.transform.rotation;
         newQuat.x = 0.0f;

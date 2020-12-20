@@ -43,8 +43,18 @@ public class TowerManager : MonoBehaviour
 		if(Input.GetMouseButtonDown(0)) {
 			SelectGameObject();
 		}
-		else if(Input.GetKeyDown(KeyCode.B)) {
+		// Building Towers
+		else if(Input.GetKeyDown(KeyCode.Q)) {
 			BuildTower(airTowerPrefab);
+		}
+		else if(Input.GetKeyDown(KeyCode.W)) {
+			BuildTower(waterTowerPrefab);
+		}
+		else if(Input.GetKeyDown(KeyCode.E)) {
+			BuildTower(earthTowerPrefab);
+		}
+		else if(Input.GetKeyDown(KeyCode.R)) {
+			BuildTower(fireTowerPrefab);
 		}
 	}
 
@@ -53,11 +63,8 @@ public class TowerManager : MonoBehaviour
 	/// </summary>
 	void SelectGameObject()
 	{
-		// If the left mouse button is clicked
 		int layerMask = 1 << 5;
 		layerMask = ~layerMask;
-
-		// Gets the current Camera
 		Camera currentCam = Camera.main;
 
 		// Creates ray
@@ -66,25 +73,21 @@ public class TowerManager : MonoBehaviour
 
 		// If the ray interects with something in the scene 
 		// and that something is a tile or tower
-		if(Physics.Raycast(ray, out rayHit, Mathf.Infinity, layerMask)
-			&& (rayHit.transform.gameObject.tag == "Tile"
-			|| rayHit.transform.gameObject.tag == "Tower")) {
-
-			// If the old selection is a tile
+		if(Physics.Raycast(ray, out rayHit, Mathf.Infinity, layerMask)) {
+			// If the old selection is a tile, its material is reverted back to normal
 			if(currentSelectedGameObject != null
 				&& currentSelectedGameObject.tag == "Tile") {
 				currentSelectedGameObject.GetComponent<Tile>().SetSelect(false);
 			}
 
-			currentSelectedGameObject = rayHit.transform.gameObject;
-
-			GameObject parent = null;
-			if(currentSelectedGameObject.transform.parent != null)
-				parent = currentSelectedGameObject.transform.parent.gameObject;
-
-			if(parent.name == "tile") {
-				currentSelectedGameObject = parent;
-			}
+			// Selects the tower or tile accordingly, if 
+			if(rayHit.transform.gameObject.tag == "Tower"
+				|| rayHit.transform.gameObject.tag == "Tile")
+				currentSelectedGameObject = rayHit.transform.gameObject;
+			else if(rayHit.transform.parent != null
+				&& (rayHit.transform.parent.gameObject.tag == "Tile"
+					|| rayHit.transform.parent.gameObject.tag == "Tower"))
+				currentSelectedGameObject = rayHit.transform.parent.gameObject;
 
 			// If the new selection is a tile
 			if(currentSelectedGameObject.tag == "Tile") {
@@ -101,11 +104,21 @@ public class TowerManager : MonoBehaviour
 	{
 		if(currentSelectedGameObject != null
 			&& currentSelectedGameObject.tag == "Tile") {
+			// Checks if the tile already has a tower built on it
+			if(currentSelectedGameObject.GetComponent<Tile>().tower != null) {
+				Debug.Log("There is already a tower built on this tile!");
+				return;
+			}
+
 			// Calculates the to be new tower's position based on the tile is being built on
 			Vector3 towerPos = currentSelectedGameObject.transform.position;
 			towerPos.y += tower.transform.Find("base").gameObject.GetComponent<BoxCollider>().size.y / 2;
-			// Creates a new tower
+			// Creates a new tower and adds it to the tile its being built on
 			GameObject newTower = Instantiate(tower, towerPos, Quaternion.identity, towers.transform);
+			newTower.name = "tower " + towers.transform.childCount + " - " + tower.GetComponent<Tower>().towerTypes[0];
+			currentSelectedGameObject.GetComponent<Tile>().tower = newTower;
 		}
 	}
+
+	
 }

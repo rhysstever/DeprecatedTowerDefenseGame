@@ -117,11 +117,15 @@ public class EnemyManager : MonoBehaviour
 	{
         List<GameObject> enemiesToDestroy = new List<GameObject>();
         Vector3 exitPos = gameObject.GetComponent<LevelManager>().checkpoints.transform.Find("exit").position;
-        
-        // Loops through each enemy child, checking if they have gotten close enough to the exit
+
+		// Loops through each enemy child, checking if the enemy has no health 
+		// or has gotten close enough to the exit
         // If so, they are deactivated and added to a list to be destroyed later
         for(int child = 0; child < enemies.transform.childCount; child++) {
-            if(Vector3.Distance(enemies.transform.GetChild(child).gameObject.transform.position, exitPos) <= checkpointRange) {
+            if(enemies.transform.GetChild(child).gameObject.GetComponent<Enemy>().health <= 0.0f
+				|| Vector3.Distance(
+				enemies.transform.GetChild(child).gameObject.transform.position, 
+				exitPos) <= checkpointRange) {
                 enemiesToDestroy.Add(enemies.transform.GetChild(child).gameObject);
                 enemies.transform.GetChild(child).gameObject.SetActive(false);
                 currentWave.EnemyRemoved();
