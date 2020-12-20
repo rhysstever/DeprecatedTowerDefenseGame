@@ -9,6 +9,7 @@ TagManager:
   - Entrance
   - Exit
   - Enemy
+  - Tower
   layers:
   - Default
   - TransparentFX

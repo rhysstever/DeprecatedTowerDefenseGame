@@ -153,6 +153,13 @@ public class LevelManager : MonoBehaviour
         GameObject cp2 = CreateCheckpoint(checkpoints, new Vector2(10, 10), exit);
         GameObject cp1 = CreateCheckpoint(checkpoints, new Vector2(4, 10), cp2);
         GameObject entrance = CreateCheckpoint(checkpoints, new Vector2(4, 2), CheckpointType.Entrance, cp1);
+
+        // Disables the mesh renderer of all checkpoints (except the entrance and exit)
+        // to make them "invisible" in the scene
+        for(int child = 0; child < checkpoints.transform.childCount; child++) {
+            if(child > 0 && child < checkpoints.transform.childCount - 1)
+                checkpoints.transform.GetChild(child).gameObject.GetComponent<MeshRenderer>().enabled = false;
+		}
     }
 
     /// <summary>

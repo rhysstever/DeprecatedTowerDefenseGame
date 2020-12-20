@@ -99,13 +99,14 @@ public class EnemyManager : MonoBehaviour
     /// <param name="enemy">The prefab of the to-be created enemy</param>
     void SpawnEnemy(GameObject enemy)
     {
-        // Creates an enemy and adds it to the empty GO
-        GameObject spawnPoint = GameObject.Find("entrance");
+        // Calculate the position of the entrance checkpoint, zero-ing out its y-value
+        GameObject spawnPoint = gameObject.GetComponent<LevelManager>().checkpoints.transform.GetChild(0).gameObject;
         Vector3 position = spawnPoint.transform.position;
         position.y = 0.0f;
+        // Creates an enemy and adds it to the parent GO
         GameObject newEnemy = Instantiate(enemy, position, Quaternion.identity, enemies.transform);
-        newEnemy.name = "enemy" + enemies.transform.childCount;
-        newEnemy.GetComponent<Enemy>().currentCheckpoint = gameObject.GetComponent<LevelManager>().checkpoints.transform.Find("entrance").gameObject;
+        newEnemy.name = "enemy" + currentWave.EnemiesSpawned;
+        newEnemy.GetComponent<Enemy>().currentCheckpoint = spawnPoint;
 
         // Updates the Wave object that an enemy was spawned from it
         currentWave.EnemySpawned();

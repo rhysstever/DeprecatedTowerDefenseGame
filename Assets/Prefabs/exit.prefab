@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -8063569990785966423}
   m_Layer: 0
   m_Name: exit
-  m_TagString: Untagged
+  m_TagString: Exit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -125,3 +125,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   num: 0
+  nextCheckpoint: {fileID: 0}

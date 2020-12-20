@@ -387,7 +387,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.40465656, y: -0, z: -0, w: 0.91446877}
-  m_LocalPosition: {x: 9.81, y: 8.21, z: -1.36}
+  m_LocalPosition: {x: 9.81, y: 8.84, z: -2.82}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -405,6 +405,7 @@ GameObject:
   - component: {fileID: 1494799153}
   - component: {fileID: 1494799152}
   - component: {fileID: 1494799150}
+  - component: {fileID: 1494799154}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -485,3 +486,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentMenuState: 0
+--- !u!114 &1494799154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494799149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c38eebb888029f64ca800dc15e85a439, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  airTowerPrefab: {fileID: 8910245781635599045, guid: aa0ff26c5d79f8f41a6305cbb9b9a3ff, type: 3}
+  earthTowerPrefab: {fileID: 8910245781635599045, guid: 35bea8e4d4128c9498006e13cd96c5fc, type: 3}
+  fireTowerPrefab: {fileID: 8910245781635599045, guid: a466d57f829bc24458002cfb20b24fa4, type: 3}
+  waterTowerPrefab: {fileID: 8910245781635599045, guid: f8e45d4ab67bc5147bbbb9827ab2e258, type: 3}
+  towers: {fileID: 0}
+  currentSelectedGameObject: {fileID: 0}
