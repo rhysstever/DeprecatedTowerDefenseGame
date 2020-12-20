@@ -485,7 +485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01742ea543aa9754b99bf9aece3705ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentMenuState: 0
+  currentMenuState: 1
 --- !u!114 &1494799154
 MonoBehaviour:
   m_ObjectHideFlags: 0

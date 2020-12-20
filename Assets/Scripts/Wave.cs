@@ -42,7 +42,7 @@ public class Wave
 		hasSpawned = false;
 		hasCleared = false;
 		numSpawned = 0;
-		numLeft = 0;
+		numLeft = numOfEnemies;
 	}
 	#endregion
 
@@ -73,7 +73,6 @@ public class Wave
 		}
 
 		numSpawned++;
-		numLeft++;
 	}
 
 	public void EnemyRemoved()

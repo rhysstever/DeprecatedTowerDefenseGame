@@ -69,7 +69,27 @@ public class TowerManager : MonoBehaviour
 		if(Physics.Raycast(ray, out rayHit, Mathf.Infinity, layerMask)
 			&& (rayHit.transform.gameObject.tag == "Tile"
 			|| rayHit.transform.gameObject.tag == "Tower")) {
+
+			// If the old selection is a tile
+			if(currentSelectedGameObject != null
+				&& currentSelectedGameObject.tag == "Tile") {
+				currentSelectedGameObject.GetComponent<Tile>().SetSelect(false);
+			}
+
 			currentSelectedGameObject = rayHit.transform.gameObject;
+
+			GameObject parent = null;
+			if(currentSelectedGameObject.transform.parent != null)
+				parent = currentSelectedGameObject.transform.parent.gameObject;
+
+			if(parent.name == "tile") {
+				currentSelectedGameObject = parent;
+			}
+
+			// If the new selection is a tile
+			if(currentSelectedGameObject.tag == "Tile") {
+				currentSelectedGameObject.GetComponent<Tile>().SetSelect(true);
+			}
 		}
 		// Not clicking on anything will unselect the current gameObject
 		else {

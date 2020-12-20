@@ -87,7 +87,8 @@ public class EnemyManager : MonoBehaviour
     /// <returns>The first wave</returns>
     Wave CreateWaves()
 	{
-        Wave wave2 = new Wave("Wave 2", redEnemyPrefab, 2, 1.0f);
+		Wave wave3 = new Wave("Wave 3", blueEnemyPrefab, 3, 1.5f);
+		Wave wave2 = new Wave("Wave 2", redEnemyPrefab, 2, 1.0f, wave3);
         Wave wave1 = new Wave("Wave 1", blueEnemyPrefab, 4, 0.5f, wave2);
 
         return wave1;
@@ -99,8 +100,8 @@ public class EnemyManager : MonoBehaviour
     /// <param name="enemy">The prefab of the to-be created enemy</param>
     void SpawnEnemy(GameObject enemy)
     {
-        // Calculate the position of the entrance checkpoint, zero-ing out its y-value
-        GameObject spawnPoint = gameObject.GetComponent<LevelManager>().checkpoints.transform.GetChild(0).gameObject;
+		// Calculate the position of the entrance checkpoint, zero-ing out its y-value
+		GameObject spawnPoint = gameObject.GetComponent<LevelManager>().checkpoints.transform.Find("entrance").gameObject;
         Vector3 position = spawnPoint.transform.position;
         position.y = 0.0f;
         // Creates an enemy and adds it to the parent GO
@@ -123,7 +124,6 @@ public class EnemyManager : MonoBehaviour
             if(Vector3.Distance(enemies.transform.GetChild(child).gameObject.transform.position, exitPos) <= checkpointRange) {
                 enemiesToDestroy.Add(enemies.transform.GetChild(child).gameObject);
                 enemies.transform.GetChild(child).gameObject.SetActive(false);
-
                 currentWave.EnemyRemoved();
             }
 		}
