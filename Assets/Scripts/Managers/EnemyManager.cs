@@ -53,7 +53,7 @@ public class EnemyManager : MonoBehaviour
                     gameObject.GetComponent<StateManager>().ChangeMenuState(MenuState.gameOver);
             }
 			else {
-                ClearEnemies();
+                CheckEnemies();
             }
 
             if(currentWave != null) {
@@ -113,28 +113,38 @@ public class EnemyManager : MonoBehaviour
         currentWave.EnemySpawned();
     }
 
-    void ClearEnemies()
+    void CheckEnemies()
 	{
         List<GameObject> enemiesToDestroy = new List<GameObject>();
         Vector3 exitPos = gameObject.GetComponent<LevelManager>().checkpoints.transform.Find("exit").position;
 
-		// Loops through each enemy child, checking if the enemy has no health 
-		// or has gotten close enough to the exit
-        // If so, they are deactivated and added to a list to be destroyed later
+		// Loops through each enemy child, checking if they need to be removed
         for(int child = 0; child < enemies.transform.childCount; child++) {
-            if(enemies.transform.GetChild(child).gameObject.GetComponent<Enemy>().health <= 0.0f
-				|| Vector3.Distance(
-				enemies.transform.GetChild(child).gameObject.transform.position, 
-				exitPos) <= checkpointRange) {
-                enemiesToDestroy.Add(enemies.transform.GetChild(child).gameObject);
-                enemies.transform.GetChild(child).gameObject.SetActive(false);
-                currentWave.EnemyRemoved();
-            }
+			GameObject enemy = enemies.transform.GetChild(child).gameObject;
+			// If the enemy has no health
+			if(enemy.GetComponent<Enemy>().health <= 0.0f) {
+                enemiesToDestroy.Add(enemy);
+				RemoveEnemy(enemy);
+			}
+			// If the enemy has reached the exit
+			else if(Vector3.Distance(
+						enemy.transform.position,
+						exitPos) <= checkpointRange) {
+				enemiesToDestroy.Add(enemy);
+				RemoveEnemy(enemy);
+				gameObject.GetComponent<Player>().TakeDamage(enemy.GetComponent<Enemy>().damage);
+			}
 		}
 
         // Destroys every GO in the created list
         foreach(GameObject enemy in enemiesToDestroy) {
             Destroy(enemy);
 		}
+	}
+
+	void RemoveEnemy(GameObject enemy)
+	{
+		enemy.SetActive(false);
+		currentWave.EnemyRemoved();
 	}
 }

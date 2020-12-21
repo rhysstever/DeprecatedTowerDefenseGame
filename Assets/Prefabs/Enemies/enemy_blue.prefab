@@ -236,5 +236,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 3
+  damage: 30
   moveSpeed: 0.05
   currentCheckpoint: {fileID: 0}

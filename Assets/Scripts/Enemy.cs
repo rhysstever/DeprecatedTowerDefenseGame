@@ -5,6 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public float health;
+	public int damage;
     public float moveSpeed;
     public GameObject currentCheckpoint;
     
@@ -64,6 +65,10 @@ public class Enemy : MonoBehaviour
     /// </summary>
     void RotateToNextCP()
     {
+		// If there is no checkpoint to look at, the method ends
+		if(currentCheckpoint == null)
+			return;
+
         // Calculate the correct rotation, zero-ing out the x and z values 
         // so it does not tilt in any direction
         gameObject.transform.LookAt(currentCheckpoint.transform);

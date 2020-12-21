@@ -406,6 +406,7 @@ GameObject:
   - component: {fileID: 1494799152}
   - component: {fileID: 1494799150}
   - component: {fileID: 1494799154}
+  - component: {fileID: 1494799155}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -504,3 +505,16 @@ MonoBehaviour:
   waterTowerPrefab: {fileID: 8910245781635599045, guid: f8e45d4ab67bc5147bbbb9827ab2e258, type: 3}
   towers: {fileID: 0}
   currentSelectedGameObject: {fileID: 0}
+--- !u!114 &1494799155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494799149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 407a16f6e9930a843ad1408be62dc1e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
