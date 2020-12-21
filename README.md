@@ -3,10 +3,10 @@
 ## Towers
 Tower       | Tier     | Type(s)      | Damage | Attack Speed | Range | Cost | Notes
 ----------- | -------- | ------------ | ------ | ------------ | ----- | ---- | -----
-Air         | Basic    | Air          |  1     |  250         | 5     | #    | 
-Earth       | Basic    | Earth        |  5     |  100         | 2     | #    | 
-Fire        | Basic    | Fire         |  2     |  150         | 2     | #    | 
-Water       | Basic    | Water        |  2     |  150         | 3     | #    | 
+Air         | Basic    | Air          |  1     |  0.5 sec     | 5     | #    | 
+Earth       | Basic    | Earth        |  5     |  2.0 sec     | 2     | #    | 
+Fire        | Basic    | Fire         |  2     |  1.0 sec     | 2     | #    | 
+Water       | Basic    | Water        |  2     |  1.0 sec     | 3     | #    | 
 Lightning   | Advanced | Air, Fire    |  #     |  #           | #     | #    | 
 Ice         | Advanced | Water, Air   |  #     |  #           | #     | #    | 
 Quicksand   | Advanced | Earth, Water |  #     |  #           | #     | #    | 
