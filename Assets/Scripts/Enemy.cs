@@ -23,13 +23,13 @@ public class Enemy : MonoBehaviour
 
 	void FixedUpdate()
 	{
-        PathFollow();
+        Move();
     }
 
     /// <summary>
     /// Moves the enemy closer to its next checkpoint until it gets close enough to move to the next checkpoint
     /// </summary>
-    void PathFollow()
+    void Move()
 	{
         // If the enemy is close enough to the checkpoint, the current checkpoint is update to 
         // the next checkpoint and the enemy is rotated accordingly
@@ -55,6 +55,7 @@ public class Enemy : MonoBehaviour
         Vector3 distVec = currentCheckpoint.transform.position - gameObject.transform.position;
         distVec.y = 0.0f;
         distVec.Normalize();
+        distVec /= 100;
         distVec *= moveSpeed;
 
         return distVec;

@@ -48,23 +48,30 @@ public class TowerManager : MonoBehaviour
 	/// </summary>
 	void SelectGameObject()
 	{
-		int layerMask = 1 << 5;
-		layerMask = ~layerMask;
-		Camera currentCam = Camera.main;
-
-		// Creates ray
-		Ray ray = currentCam.ScreenPointToRay(Input.mousePosition);
-		RaycastHit rayHit;
-
 		// If the old selection is a tile, its material is reverted back to normal
 		if(currentSelectedGameObject != null
 			&& currentSelectedGameObject.tag == "Tile") {
 			currentSelectedGameObject.GetComponent<Tile>().SetSelect(false);
 		}
 
-		// If the ray interects with something in the scene 
-		// and that something is a tile or tower
-		if(Physics.Raycast(ray, out rayHit, Mathf.Infinity, layerMask)) {
+
+		Camera currentCam = Camera.main;
+
+		// Creates ray
+		Ray ray = currentCam.ScreenPointToRay(Input.mousePosition);
+		RaycastHit rayHit;
+
+		// Creates a layerMask to include all but the UI layer
+		int layerMaskUI = 1 << 5;
+		layerMaskUI = ~layerMaskUI;
+
+		// Creates a layerMask to include all but the Checkpoints layer
+		int layerMaskCP = 1 << 8;
+		layerMaskCP = ~layerMaskCP;
+
+		// If the ray interects with something in the scene that is not UI nor a checkpoint
+		if(Physics.Raycast(ray, out rayHit, Mathf.Infinity, layerMaskUI)
+			&& Physics.Raycast(ray, out rayHit, Mathf.Infinity, layerMaskCP)) {
 			// If the selection is the gameObject that is already selected
 			if(currentSelectedGameObject == FindSelectableGameObject(rayHit.transform.gameObject))
 				currentSelectedGameObject = null;

@@ -237,6 +237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   towerTier: 0
   towerTypes: 02000000
-  damage: 0
-  attackSpeed: 0
-  range: 0
+  damage: 5
+  attackSpeed: 100
+  range: 2
+  currentEnemy: {fileID: 0}

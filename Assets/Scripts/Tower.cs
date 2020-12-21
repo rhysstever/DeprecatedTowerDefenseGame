@@ -33,7 +33,7 @@ public class Tower : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        shotTimer = attackSpeed;    // the tower can shoot immediately
+        shotTimer = AttackSpeedToTimer();    // the tower can shoot immediately
 		currentEnemy = null;
     }
 
@@ -47,7 +47,7 @@ public class Tower : MonoBehaviour
 	void FixedUpdate()
 	{
 		if(currentEnemy != null
-			&& shotTimer >= attackSpeed)
+			&& shotTimer >= AttackSpeedToTimer())
 			Shoot(currentEnemy);
 		else
 			shotTimer += Time.deltaTime;
@@ -98,5 +98,16 @@ public class Tower : MonoBehaviour
 			newQuat.z = 0.0f;
 			gameObject.transform.rotation = newQuat;
 		}
+	}
+
+	/// <summary>
+	/// Converts the tower's attackSpeed value to a timer
+	/// </summary>
+	/// <returns>The timer the tower will use to calculate when it can shot</returns>
+	float AttackSpeedToTimer()
+	{
+		float initialTimer = 3.0f;
+		initialTimer -= (attackSpeed * 0.01f);
+		return initialTimer;
 	}
 }
