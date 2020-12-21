@@ -5,8 +5,8 @@ Tower       | Tier     | Type(s)      | Damage | Attack Speed | Range | Cost | N
 ----------- | -------- | ------------ | ------ | ------------ | ----- | ---- | -----
 Air         | Basic    | Air          |  1     |  0.5 sec     | 5     | #    | 
 Earth       | Basic    | Earth        |  5     |  2.0 sec     | 2     | #    | 
-Fire        | Basic    | Fire         |  2     |  1.0 sec     | 2     | #    | 
-Water       | Basic    | Water        |  2     |  1.0 sec     | 3     | #    | 
+Fire        | Basic    | Fire         |  2     |  1.0 sec     | 2     | #    | Deals 1 dps for 2 sec
+Water       | Basic    | Water        |  2     |  1.5 sec     | 3     | #    | Slows enemies by %25 for 2 sec
 Lightning   | Advanced | Air, Fire    |  #     |  #           | #     | #    | 
 Ice         | Advanced | Water, Air   |  #     |  #           | #     | #    | 
 Quicksand   | Advanced | Earth, Water |  #     |  #           | #     | #    | 
