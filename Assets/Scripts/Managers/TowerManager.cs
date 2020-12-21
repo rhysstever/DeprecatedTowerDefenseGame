@@ -2,21 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum TowerTier
-{
-	Basic, 
-	Advanced, 
-	Expert
-}
-
-public enum TowerType
-{
-	Air,
-	Water, 
-	Earth,
-	Fire
-}
-
 public class TowerManager : MonoBehaviour
 {
 	// Set in inspector
@@ -71,26 +56,25 @@ public class TowerManager : MonoBehaviour
 		Ray ray = currentCam.ScreenPointToRay(Input.mousePosition);
 		RaycastHit rayHit;
 
+		// If the old selection is a tile, its material is reverted back to normal
+		if(currentSelectedGameObject != null
+			&& currentSelectedGameObject.tag == "Tile") {
+			currentSelectedGameObject.GetComponent<Tile>().SetSelect(false);
+		}
+
 		// If the ray interects with something in the scene 
 		// and that something is a tile or tower
 		if(Physics.Raycast(ray, out rayHit, Mathf.Infinity, layerMask)) {
-			// If the old selection is a tile, its material is reverted back to normal
-			if(currentSelectedGameObject != null
-				&& currentSelectedGameObject.tag == "Tile") {
-				currentSelectedGameObject.GetComponent<Tile>().SetSelect(false);
-			}
-
-			// Selects the tower or tile accordingly, if 
-			if(rayHit.transform.gameObject.tag == "Tower"
-				|| rayHit.transform.gameObject.tag == "Tile")
-				currentSelectedGameObject = rayHit.transform.gameObject;
-			else if(rayHit.transform.parent != null
-				&& (rayHit.transform.parent.gameObject.tag == "Tile"
-					|| rayHit.transform.parent.gameObject.tag == "Tower"))
-				currentSelectedGameObject = rayHit.transform.parent.gameObject;
+			// If the selection is the gameObject that is already selected
+			if(currentSelectedGameObject == FindSelectableGameObject(rayHit.transform.gameObject))
+				currentSelectedGameObject = null;
+			// Otherwise the tower or tile is selected (even if a part of it is selected)
+			else
+				currentSelectedGameObject = FindSelectableGameObject(rayHit.transform.gameObject);
 
 			// If the new selection is a tile
-			if(currentSelectedGameObject.tag == "Tile") {
+			if(currentSelectedGameObject != null
+				&& currentSelectedGameObject.tag == "Tile") {
 				currentSelectedGameObject.GetComponent<Tile>().SetSelect(true);
 			}
 		}
@@ -100,7 +84,33 @@ public class TowerManager : MonoBehaviour
 		}
 	}
 
-	void BuildTower(GameObject tower)
+	/// <summary>
+	/// Given a gameObject, finds if that gameObject is a tile or tower, or if it has a parent that is either
+	/// </summary>
+	/// <param name="currentSelection">The given gameObject</param>
+	/// <returns></returns>
+	GameObject FindSelectableGameObject(GameObject currentSelection)
+	{
+		// Loops while the current selection is not a tower nor a tile
+		while(currentSelection.GetComponent<Tile>() == null
+				&& currentSelection.GetComponent<Tower>() == null) {
+			// If the current selection has a parent, the current selection becomes the parent
+			if(currentSelection.transform.parent != null)
+				currentSelection = currentSelection.transform.parent.gameObject;
+			// If the current selection does not have a parent, null is returned
+			else
+				return null;
+		}
+
+		// If the current selection is a tower or tile object, the object is returned
+		return currentSelection;
+	}
+
+	/// <summary>
+	/// Builds a tower of a given prefab
+	/// </summary>
+	/// <param name="towerPrefab">The prefab of the tower being built</param>
+	void BuildTower(GameObject towerPrefab)
 	{
 		if(currentSelectedGameObject != null
 			&& currentSelectedGameObject.tag == "Tile") {
@@ -112,13 +122,11 @@ public class TowerManager : MonoBehaviour
 
 			// Calculates the to be new tower's position based on the tile is being built on
 			Vector3 towerPos = currentSelectedGameObject.transform.position;
-			towerPos.y += tower.transform.Find("base").gameObject.GetComponent<BoxCollider>().size.y / 2;
+			towerPos.y += towerPrefab.transform.Find("base").gameObject.GetComponent<BoxCollider>().size.y / 2;
 			// Creates a new tower and adds it to the tile its being built on
-			GameObject newTower = Instantiate(tower, towerPos, Quaternion.identity, towers.transform);
-			newTower.name = "tower " + towers.transform.childCount + " - " + tower.GetComponent<Tower>().towerTypes[0];
+			GameObject newTower = Instantiate(towerPrefab, towerPos, Quaternion.identity, towers.transform);
+			newTower.name = "tower " + towers.transform.childCount + " - " + towerPrefab.GetComponent<Tower>().towerTypes[0];
 			currentSelectedGameObject.GetComponent<Tile>().tower = newTower;
 		}
 	}
-
-	
 }

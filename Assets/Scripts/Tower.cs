@@ -2,6 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum TowerTier
+{
+	Basic,
+	Advanced,
+	Expert
+}
+
+public enum TowerType
+{
+	Air,
+	Water,
+	Earth,
+	Fire
+}
+
 public class Tower : MonoBehaviour
 {
     // Set in inspector
@@ -25,7 +40,7 @@ public class Tower : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		CheckForEnemies();
+		TargetEnemy();
 		RotateToCurrentEnemy();
     }
 
@@ -38,11 +53,14 @@ public class Tower : MonoBehaviour
 			shotTimer += Time.deltaTime;
 	}
 
-	void CheckForEnemies()
+	/// <summary>
+	/// Loops through all enemies in the scene, finding any within range
+	/// </summary>
+	void TargetEnemy()
 	{
 		currentEnemy = null;
 		GameObject enemies = GameObject.Find("enemies");
-		for(int child = 0; child < enemies.transform.childCount; child++) {
+		for(int child = enemies.transform.childCount - 1; child >= 0; child--) {
 			if(Vector3.Distance(
 				gameObject.transform.position,
 				enemies.transform.GetChild(child).position) <= range)
@@ -50,6 +68,10 @@ public class Tower : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Deals damage to a targeted enemy
+	/// </summary>
+	/// <param name="enemy">The enemy to be shot</param>
     void Shoot(GameObject enemy)
 	{
 		// Checks that the enemy is not null and is actually an enemy
@@ -64,11 +86,12 @@ public class Tower : MonoBehaviour
 		shotTimer = 0.0f;
 	}
 
+	/// <summary>
+	/// Calculate the correct rotation, zero-ing out the x and z values so it does not tilt in any direction
+	/// </summary>
 	void RotateToCurrentEnemy()
 	{
 		if(currentEnemy != null) {
-			// Calculate the correct rotation, zero-ing out the x and z values 
-			// so it does not tilt in any direction
 			gameObject.transform.LookAt(currentEnemy.transform);
 			Quaternion newQuat = gameObject.transform.rotation;
 			newQuat.x = 0.0f;
