@@ -11,26 +11,34 @@ public enum TowerTier
 
 public enum TowerType
 {
-	Air,
-	Water,
-	Earth,
-	Fire
+	None,
+	Air			=    1,
+	Earth		=   20,
+	Fire		=  300, 
+	Water		= 4000,
+	Lightning	=  301,
+	Ice			= 4001,
+	Quicksand	= 4020,
+	Volcano		=  320
 }
 
 public class Tower : MonoBehaviour
 {
     // Set in inspector
     public TowerTier towerTier;
-    public TowerType[] towerTypes;
+    public TowerType towerType;
     public float damage;
     public float attackSpeed;
     public float range;
-    
-    // Set at Start()
+
+	// Set at Start()
     float shotTimer;
 	public GameObject currentEnemy;
     
-    // Start is called before the first frame update
+	// Set on creation
+	public GameObject tile;
+    
+	// Start is called before the first frame update
     void Start()
     {
         shotTimer = AttackSpeedToTimer();    // the tower can shoot immediately

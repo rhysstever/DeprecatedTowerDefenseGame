@@ -156,7 +156,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2526a03ef8df13441bc30b662cfb2c1b, type: 2}
+  - {fileID: 2100000, guid: 71e212355dc106f4da41b83641d08784, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 8910245781635599046}
   - component: {fileID: -4507115723785744690}
   m_Layer: 0
-  m_Name: tower_water
+  m_Name: tower_air
   m_TagString: Tower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -236,8 +236,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerTier: 0
-  towerTypes: 01000000
-  damage: 2
-  attackSpeed: 150
-  range: 4
+  towerType: 1
+  damage: 1
+  attackSpeed: 250
+  range: 5
   currentEnemy: {fileID: 0}

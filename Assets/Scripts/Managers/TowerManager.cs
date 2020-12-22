@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,9 +10,14 @@ public class TowerManager : MonoBehaviour
 	public GameObject earthTowerPrefab;
 	public GameObject fireTowerPrefab;
 	public GameObject waterTowerPrefab;
+	public GameObject lightningTowerPrefab;
+	public GameObject iceTowerPrefab;
+	public GameObject quicksandTowerPrefab;
+	public GameObject volcanoTowerPrefab;
 
 	// Set at Start()
 	public GameObject towers;
+	Dictionary<KeyCode, TowerType> inputTypeDictionary;
 
 	// Set later in script
 	public GameObject currentSelectedGameObject;
@@ -20,27 +26,21 @@ public class TowerManager : MonoBehaviour
     void Start()
     {
 		towers = new GameObject("towers");
-    }
+		inputTypeDictionary = new Dictionary<KeyCode, TowerType>();
+
+		inputTypeDictionary.Add(KeyCode.Q, TowerType.Air);
+		inputTypeDictionary.Add(KeyCode.W, TowerType.Water);
+		inputTypeDictionary.Add(KeyCode.E, TowerType.Earth);
+		inputTypeDictionary.Add(KeyCode.R, TowerType.Fire);
+	}
 
 	// Update is called once per frame
 	void Update()
 	{
-		if(Input.GetMouseButtonDown(0)) {
+		if(Input.GetMouseButtonDown(0))
 			SelectGameObject();
-		}
-		// Building Towers
-		else if(Input.GetKeyDown(KeyCode.Q)) {
-			BuildTower(airTowerPrefab);
-		}
-		else if(Input.GetKeyDown(KeyCode.W)) {
-			BuildTower(waterTowerPrefab);
-		}
-		else if(Input.GetKeyDown(KeyCode.E)) {
-			BuildTower(earthTowerPrefab);
-		}
-		else if(Input.GetKeyDown(KeyCode.R)) {
-			BuildTower(fireTowerPrefab);
-		}
+		else if(Input.anyKeyDown)
+			Construction();
 	}
 
 	/// <summary>
@@ -53,7 +53,6 @@ public class TowerManager : MonoBehaviour
 			&& currentSelectedGameObject.tag == "Tile") {
 			currentSelectedGameObject.GetComponent<Tile>().SetSelect(false);
 		}
-
 
 		Camera currentCam = Camera.main;
 
@@ -114,11 +113,67 @@ public class TowerManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Builds a tower of a given prefab
+	/// Checks which key is being pressed down and decides if a tower is being built or upgraded
 	/// </summary>
-	/// <param name="towerPrefab">The prefab of the tower being built</param>
-	void BuildTower(GameObject towerPrefab)
+	void Construction()
 	{
+		// Loops thr each key in the dictionary, 
+		// passing the tower type of the corresponding pressed key
+		TowerType towerType = TowerType.None;
+		foreach(KeyCode key in inputTypeDictionary.Keys) {
+			if(Input.GetKeyDown(key)) {
+				towerType = inputTypeDictionary[key];
+			}
+		}
+
+		// If no key was pressed, the method is exited
+		if(towerType == TowerType.None)
+			return;
+
+		// If a tile is selected, a tower is built on it
+		if(currentSelectedGameObject.GetComponent<Tile>() != null
+			&& currentSelectedGameObject.GetComponent<Tile>().tower == null)
+			BuildTower(towerType);
+		// If a tower is selected, it is upgraded
+		else if(currentSelectedGameObject.GetComponent<Tower>() != null)
+			UpgradeTower(towerType);
+
+	}
+
+	/// <summary>
+	/// Builds a tower of a given type
+	/// </summary>
+	/// <param name="element">The type of the tower being built</param>
+	void BuildTower(TowerType element)
+	{
+		GameObject towerPrefab = null;
+		switch(element) {
+			case TowerType.Air:
+				towerPrefab = airTowerPrefab;
+				break;
+			case TowerType.Earth:
+				towerPrefab = earthTowerPrefab;
+				break;
+			case TowerType.Fire:
+				towerPrefab = fireTowerPrefab;
+				break;
+			case TowerType.Water:
+				towerPrefab = waterTowerPrefab;
+				break;
+			case TowerType.Lightning:
+				towerPrefab = lightningTowerPrefab;
+				break;
+			case TowerType.Ice:
+				towerPrefab = iceTowerPrefab;
+				break;
+			case TowerType.Quicksand:
+				towerPrefab = quicksandTowerPrefab;
+				break;
+			case TowerType.Volcano:
+				towerPrefab = volcanoTowerPrefab;
+				break;
+		}
+
 		if(currentSelectedGameObject != null
 			&& currentSelectedGameObject.tag == "Tile") {
 			// Checks if the tile already has a tower built on it
@@ -130,10 +185,34 @@ public class TowerManager : MonoBehaviour
 			// Calculates the to be new tower's position based on the tile is being built on
 			Vector3 towerPos = currentSelectedGameObject.transform.position;
 			towerPos.y += towerPrefab.transform.Find("base").gameObject.GetComponent<BoxCollider>().size.y / 2;
-			// Creates a new tower and adds it to the tile its being built on
+			// Creates a new tower
 			GameObject newTower = Instantiate(towerPrefab, towerPos, Quaternion.identity, towers.transform);
-			newTower.name = "tower " + towers.transform.childCount + " - " + towerPrefab.GetComponent<Tower>().towerTypes[0];
+			newTower.name = towerPrefab.GetComponent<Tower>().towerType + " tower";
+			// Adds the tile to the tower and the tower to the tile
+			newTower.GetComponent<Tower>().tile = currentSelectedGameObject;
 			currentSelectedGameObject.GetComponent<Tile>().tower = newTower;
 		}
+	}
+
+	void UpgradeTower(TowerType newElement)
+	{
+		// Adds together the int values of the tower's element and the new element
+		int typeTotal = (int)newElement + (int)currentSelectedGameObject.GetComponent<Tower>().towerType;
+
+		// Checks if the total is a value in the enum
+		TowerType elementCombo = TowerType.None;
+		if(Enum.IsDefined(typeof(TowerType), typeTotal))
+			elementCombo = (TowerType)typeTotal;
+		else
+			return;
+
+		// Destroys basic tower and sets the selected GO to be the base tile
+		GameObject tempGO = currentSelectedGameObject;
+		currentSelectedGameObject = currentSelectedGameObject.GetComponent<Tower>().tile;
+		Destroy(tempGO);
+
+		// Removes the tile's tower and builds the combination tower 
+		currentSelectedGameObject.GetComponent<Tile>().tower = null;
+		BuildTower(elementCombo);
 	}
 }

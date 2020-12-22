@@ -60,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 507fcaad11dd5064089fdc0609c68280, type: 2}
+  - {fileID: 2100000, guid: 2526a03ef8df13441bc30b662cfb2c1b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -156,7 +156,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 51bf3a7c669781d4d8e5b15500cf7e3f, type: 2}
+  - {fileID: 2100000, guid: 8325ecd3fa25cd24a9ac7f7cf8ee61cf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 8910245781635599046}
   - component: {fileID: -4507115723785744690}
   m_Layer: 0
-  m_Name: tower_earth
+  m_Name: tower_ice
   m_TagString: Tower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -236,8 +236,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerTier: 0
-  towerTypes: 02000000
-  damage: 5
-  attackSpeed: 100
-  range: 2
+  towerType: 4001
+  damage: 2
+  attackSpeed: 150
+  range: 4
   currentEnemy: {fileID: 0}
+  tile: {fileID: 0}

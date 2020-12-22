@@ -473,7 +473,7 @@ MonoBehaviour:
   colOffset: 0.5
   rowGap: 0
   colGap: 0
-  checkpoints: {fileID: 0}
+  map: {fileID: 0}
   tileLength: 0
   tileWidth: 0
 --- !u!114 &1494799153
@@ -505,6 +505,10 @@ MonoBehaviour:
   earthTowerPrefab: {fileID: 8910245781635599045, guid: 35bea8e4d4128c9498006e13cd96c5fc, type: 3}
   fireTowerPrefab: {fileID: 8910245781635599045, guid: a466d57f829bc24458002cfb20b24fa4, type: 3}
   waterTowerPrefab: {fileID: 8910245781635599045, guid: f8e45d4ab67bc5147bbbb9827ab2e258, type: 3}
+  lightningTowerPrefab: {fileID: 8910245781635599045, guid: 9fa8d93515f742f4da26a9bb8a6771e5, type: 3}
+  iceTowerPrefab: {fileID: 8910245781635599045, guid: 378fa358b12d76f438eede11db9fe7f3, type: 3}
+  quicksandTowerPrefab: {fileID: 8910245781635599045, guid: 2ae63a08fd9677948a4d0ee048a3a9c5, type: 3}
+  volcanoTowerPrefab: {fileID: 8910245781635599045, guid: 8f452c37e86f78e4a8e6966a6612b3e6, type: 3}
   towers: {fileID: 0}
   currentSelectedGameObject: {fileID: 0}
 --- !u!114 &1494799155
