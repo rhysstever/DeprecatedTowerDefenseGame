@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,8 +29,9 @@ public class Tower : MonoBehaviour
     public TowerTier towerTier;
     public TowerType towerType;
     public float damage;
-    public float attackSpeed;
+    public float attackTime;
     public float range;
+	public int numOfTargets;
 
 	// Set at Start()
     float shotTimer;
@@ -41,7 +43,7 @@ public class Tower : MonoBehaviour
 	// Start is called before the first frame update
     void Start()
     {
-        shotTimer = AttackSpeedToTimer();    // the tower can shoot immediately
+        shotTimer = attackTime;    // the tower can shoot immediately
 		currentEnemy = null;
     }
 
@@ -55,7 +57,7 @@ public class Tower : MonoBehaviour
 	void FixedUpdate()
 	{
 		if(currentEnemy != null
-			&& shotTimer >= AttackSpeedToTimer())
+			&& shotTimer >= attackTime)
 			Shoot(currentEnemy);
 		else
 			shotTimer += Time.deltaTime;
@@ -89,8 +91,19 @@ public class Tower : MonoBehaviour
 			return;
 		}
 
-		// Deals damage to enemy, resets timer
-		enemy.GetComponent<Enemy>().health -= damage;
+		// Deals damage to enemy, applys the attack modifier's affliction to the enemy
+		enemy.GetComponent<Enemy>().TakeDamage(damage);
+		if(gameObject.GetComponent<Affliction>() != null) {
+			Type type = Type.GetType("Affliction");
+			enemy.AddComponent(type);
+			enemy.GetComponent<Affliction>().type = gameObject.GetComponent<Affliction>().type;
+			enemy.GetComponent<Affliction>().totalDuration = gameObject.GetComponent<Affliction>().totalDuration;
+			enemy.GetComponent<Affliction>().currentTime = gameObject.GetComponent<Affliction>().totalDuration;
+			enemy.GetComponent<Affliction>().tickFrequency = gameObject.GetComponent<Affliction>().tickFrequency;
+			enemy.GetComponent<Affliction>().amount = gameObject.GetComponent<Affliction>().amount;
+		}
+
+		// Resets timer
 		shotTimer = 0.0f;
 	}
 
@@ -106,16 +119,5 @@ public class Tower : MonoBehaviour
 			newQuat.z = 0.0f;
 			gameObject.transform.rotation = newQuat;
 		}
-	}
-
-	/// <summary>
-	/// Converts the tower's attackSpeed value to a timer
-	/// </summary>
-	/// <returns>The timer the tower will use to calculate when it can shot</returns>
-	float AttackSpeedToTimer()
-	{
-		float initialTimer = 3.0f;
-		initialTimer -= (attackSpeed * 0.01f);
-		return initialTimer;
 	}
 }

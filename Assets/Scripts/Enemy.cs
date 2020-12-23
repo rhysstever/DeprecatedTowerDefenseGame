@@ -4,44 +4,62 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    // Set in inspector
     public float health;
 	public int damage;
     public float moveSpeed;
+    public float currentMoveSpeed;
+
+    // Set when created
     public GameObject currentCheckpoint;
+
+    // Set at Start()
+    bool canMove;
     
     // Start is called before the first frame update
     void Start()
     {
-
+        canMove = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        // Sets the current move speed to its initial speed
+        currentMoveSpeed = moveSpeed;
+
+        if(gameObject.GetComponents<Affliction>().Length > 0)
+            ProcessAfflictions(gameObject.GetComponents<Affliction>());
+
+        // If the enemy is close enough to the checkpoint, the current checkpoint is update to 
+        // the next checkpoint and the enemy is rotated accordingly
+        if(Vector3.Distance(gameObject.transform.position, currentCheckpoint.transform.position)
+            <= GameObject.Find("GameManager").GetComponent<EnemyManager>().checkpointRange) {
+            canMove = false;
+        }
+        // If the enemy is still too far away from the checkpoint, it is moved to be closer
+        else {
+            canMove = true;
+        }
+
+		if(!canMove) {
+            currentCheckpoint = currentCheckpoint.GetComponent<Checkpoint>().nextCheckpoint;
+            RotateToNextCP();
+        }
     }
 
 	void FixedUpdate()
 	{
-        Move();
+        if(canMove)
+            Move();
     }
 
     /// <summary>
     /// Moves the enemy closer to its next checkpoint until it gets close enough to move to the next checkpoint
     /// </summary>
     void Move()
-	{
-        // If the enemy is close enough to the checkpoint, the current checkpoint is update to 
-        // the next checkpoint and the enemy is rotated accordingly
-        if(Vector3.Distance(gameObject.transform.position, currentCheckpoint.transform.position)
-            <= GameObject.Find("GameManager").GetComponent<EnemyManager>().checkpointRange) {
-            currentCheckpoint = currentCheckpoint.GetComponent<Checkpoint>().nextCheckpoint;
-            RotateToNextCP();
-        }
-        // If the enemy is still too far away from the checkpoint, it is moved to be closer
-        else {
-            gameObject.transform.position += NextMoveVec();
-		}
+    {
+        gameObject.transform.position += NextMoveVec();
     }
 
     /// <summary>
@@ -56,7 +74,7 @@ public class Enemy : MonoBehaviour
         distVec.y = 0.0f;
         distVec.Normalize();
         distVec /= 100;
-        distVec *= moveSpeed;
+        distVec *= currentMoveSpeed;
 
         return distVec;
 	}
@@ -78,4 +96,17 @@ public class Enemy : MonoBehaviour
         newQuat.z = 0.0f;
         gameObject.transform.rotation = newQuat;
     }
+
+    public void TakeDamage(float damage)
+	{
+        health -= damage;
+	}
+
+    void ProcessAfflictions(Affliction[] afflictions)
+	{
+        for(int a = 0; a < afflictions.Length; a++) {
+            if(afflictions[a].currentTime <= 0.0f)
+                Destroy(afflictions[a]);
+		}
+	}
 }

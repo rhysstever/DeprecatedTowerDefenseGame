@@ -108,44 +108,49 @@ public class EnemyManager : MonoBehaviour
         // Creates an enemy and adds it to the parent GO
         GameObject newEnemy = Instantiate(enemy, position, Quaternion.identity, enemies.transform);
         newEnemy.name = "enemy" + currentWave.EnemiesSpawned;
-        newEnemy.GetComponent<Enemy>().currentCheckpoint = spawnPoint;
+        newEnemy.GetComponent<Enemy>().currentCheckpoint = spawnPoint.GetComponent<Checkpoint>().nextCheckpoint;
 
         // Updates the Wave object that an enemy was spawned from it
         currentWave.EnemySpawned();
     }
 
+    /// <summary>
+    /// Checks all enemies to see if they lost all health or reached the exit
+    /// </summary>
     void CheckEnemies()
 	{
-        List<GameObject> enemiesToDestroy = new List<GameObject>();
+        List<GameObject> children = new List<GameObject>();
         Vector3 exitPos = gameObject.GetComponent<LevelManager>().map.transform.Find("checkpoints").transform.Find("exit").position;
 
+        foreach(Transform child in enemies.transform) {
+            children.Add(child.gameObject);
+		}
+
 		// Loops through each enemy child, checking if they need to be removed
-        for(int child = 0; child < enemies.transform.childCount; child++) {
-			GameObject enemy = enemies.transform.GetChild(child).gameObject;
+        for(int childIndex = 0; childIndex < children.Count; childIndex++) {
+			GameObject enemy = children[childIndex];
 			// If the enemy has no health
 			if(enemy.GetComponent<Enemy>().health <= 0.0f) {
-                enemiesToDestroy.Add(enemy);
 				RemoveEnemy(enemy);
 			}
 			// If the enemy has reached the exit
 			else if(Vector3.Distance(
 						enemy.transform.position,
 						exitPos) <= checkpointRange) {
-				enemiesToDestroy.Add(enemy);
 				RemoveEnemy(enemy);
 				gameObject.GetComponent<Player>().TakeDamage(enemy.GetComponent<Enemy>().damage);
 			}
 		}
-
-        // Destroys every GO in the created list
-        foreach(GameObject enemy in enemiesToDestroy) {
-            Destroy(enemy);
-		}
 	}
 
+    /// <summary>
+    /// Removes the given enemy from the current wave and scene
+    /// </summary>
+    /// <param name="enemy">The enemy being removed</param>
 	void RemoveEnemy(GameObject enemy)
 	{
 		enemy.SetActive(false);
 		currentWave.EnemyRemoved();
-	}
+        Destroy(enemy);
+    }
 }

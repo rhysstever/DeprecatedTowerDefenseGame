@@ -238,6 +238,8 @@ MonoBehaviour:
   towerTier: 0
   towerType: 1
   damage: 1
-  attackSpeed: 250
+  attackTime: 0.5
   range: 5
+  numOfTargets: 1
   currentEnemy: {fileID: 0}
+  tile: {fileID: 0}
