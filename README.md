@@ -8,10 +8,10 @@ Earth       | Basic    | Earth        |  5     |  2.0 sec     | 2     | #    | H
 Fire        | Basic    | Fire         |  2     |  1.0 sec     | 2     | #    | Deals 1 dps for 2 sec
 Water       | Basic    | Water        |  2     |  1.5 sec     | 3     | #    | Slows enemies by %25 for 2 sec
 Lightning   | Advanced | Air, Fire    |  #     |  #           | #     | #    | 
-Ice         | Advanced | Water, Air   |  #     |  #           | #     | #    | 
-Quicksand   | Advanced | Earth, Water |  #     |  #           | #     | #    | 
-Volcano     | Advanced | Fire, Earth  |  #     |  #           | #     | #    | 
-Apocalypse  | Expert   | All          |  #     |  #           | #     | #    | 
+Ice         | Advanced | Water, Air   |  #     |  #           | #     | #    | To be designed
+Quicksand   | Advanced | Earth, Water |  #     |  #           | #     | #    | To be designed
+Volcano     | Advanced | Fire, Earth  |  #     |  #           | #     | #    | To be designed
+Apocalypse  | Expert   | All          |  #     |  #           | #     | #    | Not created yet
 
 ## Enemies
 Enemy  | Color  | Health | Damage | Move Speed 
