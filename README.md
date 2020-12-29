@@ -26,3 +26,5 @@ Wave | Number | Enemy
 1    | 3      | Normal
 2    | 2      | Heavy
 3    | 4      | Light
+
+## Credits
