@@ -37,10 +37,12 @@ public class TowerManager : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if(Input.GetMouseButtonDown(0))
-			SelectGameObject();
-		else if(Input.anyKeyDown)
-			Construction();
+		if(gameObject.GetComponent<StateManager>().currentMenuState == MenuState.game) {
+			if(Input.GetMouseButtonDown(0))
+				SelectGameObject();
+			else if(Input.anyKeyDown)
+				Construction();
+		}
 	}
 
 	/// <summary>
@@ -137,7 +139,6 @@ public class TowerManager : MonoBehaviour
 		// If a tower is selected, it is upgraded
 		else if(currentSelectedGameObject.GetComponent<Tower>() != null)
 			UpgradeTower(towerType);
-
 	}
 
 	/// <summary>

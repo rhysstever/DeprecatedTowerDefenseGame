@@ -235,6 +235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07f7c708a5d61c64e9cf1e1dcb01115f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyName: Speedy
   health: 2
   damage: 2
   moveSpeed: 20

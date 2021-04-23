@@ -12,8 +12,7 @@ public class EnemyManager : MonoBehaviour
 
     // Set at Start()
     public GameObject enemies;
-    Wave currentWave;
-    public string currentWaveName;
+    public Wave currentWave;
     float timer;
 
     public bool isWaveSpawned;
@@ -27,7 +26,6 @@ public class EnemyManager : MonoBehaviour
         enemies = new GameObject("enemies");
 
         currentWave = CreateWaves();
-        currentWaveName = currentWave.Name;
         timer = currentWave.SpawnDelay;     // Allows the first enemy to spawn immediately
     }
 
@@ -35,23 +33,17 @@ public class EnemyManager : MonoBehaviour
     void Update()
     {
         if(gameObject.GetComponent<StateManager>().currentMenuState == MenuState.game) {
-            if(Input.GetKeyDown(KeyCode.Space)
-            && !currentWave.HasCleared
-            && !currentWave.HasSpawned) {
-                currentWave.StartSpawn();
-            }
-
             // The current wave has been cleared
             if(currentWave.HasCleared) {
                 // If there is a next wave, that wave is the new current wave
                 if(currentWave.NextWave != null) {
                     currentWave = currentWave.NextWave;
-                    currentWaveName = currentWave.Name;
                     timer = currentWave.SpawnDelay;
                 }
-                // No Waves left, the game is over
-                else
+				// No Waves left, the game is over
+				else {
                     gameObject.GetComponent<StateManager>().ChangeMenuState(MenuState.gameOver);
+				}
             }
 			else {
                 CheckEnemies();
@@ -74,11 +66,22 @@ public class EnemyManager : MonoBehaviour
             timer += Time.deltaTime;
 
             if(timer >= currentWave.SpawnDelay
-                && currentWave.EnemiesSpawned < currentWave.WaveCount) {
+                && currentWave.EnemiesSpawned < currentWave.EnemyCount) {
                 // Resets timer and spawns an enemy
                 timer = 0.0f;
                 SpawnEnemy(currentWave.EnemyPrefab);
             }
+        }
+    }
+
+    /// <summary>
+    /// Starts the current wave if it hasnt been spawned, nor spawned
+    /// </summary>
+    public void StartWave()
+	{
+        if(!currentWave.HasCleared
+            && !currentWave.HasSpawned) {
+            currentWave.StartSpawn();
         }
     }
 
@@ -102,7 +105,7 @@ public class EnemyManager : MonoBehaviour
     void SpawnEnemy(GameObject enemy)
     {
 		// Calculate the position of the entrance checkpoint, zero-ing out its y-value
-		GameObject spawnPoint = gameObject.GetComponent<LevelManager>().map.transform.Find("checkpoints").transform.Find("entrance").gameObject;
+		GameObject spawnPoint = gameObject.GetComponent<LevelManager>().level.transform.Find("checkpoints").transform.Find("entrance").gameObject;
         Vector3 position = spawnPoint.transform.position;
         position.y = 0.0f;
         // Creates an enemy and adds it to the parent GO
@@ -120,7 +123,7 @@ public class EnemyManager : MonoBehaviour
     void CheckEnemies()
 	{
         List<GameObject> children = new List<GameObject>();
-        Vector3 exitPos = gameObject.GetComponent<LevelManager>().map.transform.Find("checkpoints").transform.Find("exit").position;
+        Vector3 exitPos = gameObject.GetComponent<LevelManager>().level.transform.Find("checkpoints").transform.Find("exit").position;
 
         foreach(Transform child in enemies.transform) {
             children.Add(child.gameObject);

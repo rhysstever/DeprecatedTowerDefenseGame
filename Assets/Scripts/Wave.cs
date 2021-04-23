@@ -19,7 +19,7 @@ public class Wave
 	#region Properties
 	public string Name { get { return name; } }
 	public GameObject EnemyPrefab { get { return enemyPrefab; } }
-	public int WaveCount { get { return numOfEnemies; } }
+	public int EnemyCount { get { return numOfEnemies; } }
 	public float SpawnDelay { get { return spawnDelay; } }
 	public bool HasSpawned { get { return hasSpawned; } }
 	public bool HasCleared { get { return hasCleared; } }
@@ -29,10 +29,26 @@ public class Wave
 	#endregion
 
 	#region Contructor
+	/// <summary>
+	/// Creates a wave of enemies
+	/// </summary>
+	/// <param name="name">The name of the wave</param>
+	/// <param name="enemyPrefab">The enemy type</param>
+	/// <param name="numOfEnemies">The number of enemies</param>
+	/// <param name="spawnDelay">How long in between each enemy will be spawned</param>
+	/// <param name="nextWave">The next wave that follows after this one is complete</param>
 	public Wave(string name, GameObject enemyPrefab, int numOfEnemies, float spawnDelay, Wave nextWave) : this(name, enemyPrefab, numOfEnemies, spawnDelay)
 	{
 		this.nextWave = nextWave;
 	}
+
+	/// <summary>
+	/// Creates a wave of enemies
+	/// </summary>
+	/// <param name="name">The name of the wave</param>
+	/// <param name="enemyPrefab">The enemy type</param>
+	/// <param name="numOfEnemies">The number of enemies</param>
+	/// <param name="spawnDelay">How long in between each enemy will be spawned</param>
 	public Wave(string name, GameObject enemyPrefab, int numOfEnemies, float spawnDelay)
 	{
 		this.name = name;
@@ -47,6 +63,9 @@ public class Wave
 	#endregion
 
 	#region Methods
+	/// <summary>
+	/// Starts a wave
+	/// </summary>
 	public void StartSpawn()
 	{
 		if(hasCleared) {
@@ -61,6 +80,9 @@ public class Wave
 		hasSpawned = true;
 	}
 
+	/// <summary>
+	/// Adds 1 to the count of enemies spawned
+	/// </summary>
 	public void EnemySpawned()
 	{
 		if(!hasSpawned) {
@@ -75,12 +97,24 @@ public class Wave
 		numSpawned++;
 	}
 
+	/// <summary>
+	/// Removes an enemy from the wave enemy count
+	/// </summary>
 	public void EnemyRemoved()
 	{
 		numLeft--;
 
 		if(numLeft == 0)
 			hasCleared = true;
+	}
+
+	/// <summary>
+	/// Combines wave info into a full description
+	/// </summary>
+	/// <returns>A full description of the wave</returns>
+	public string Description()
+	{
+		return name + ": \n" + numOfEnemies + " " + enemyPrefab.GetComponent<Enemy>().enemyName + " enemies";
 	}
 	#endregion
 }
