@@ -5,15 +5,11 @@ using UnityEngine;
 
 public class TowerManager : MonoBehaviour
 {
-	// Set in inspector
-	public GameObject airTowerPrefab;
-	public GameObject earthTowerPrefab;
-	public GameObject fireTowerPrefab;
-	public GameObject waterTowerPrefab;
-	public GameObject lightningTowerPrefab;
-	public GameObject iceTowerPrefab;
-	public GameObject quicksandTowerPrefab;
-	public GameObject volcanoTowerPrefab;
+	// ===== Set in inspector =====
+	// Basic Towers
+	public GameObject airTowerPrefab, earthTowerPrefab, fireTowerPrefab, waterTowerPrefab;
+	// Advanced Towers
+	public GameObject lightningTowerPrefab, iceTowerPrefab, quicksandTowerPrefab, volcanoTowerPrefab;
 
 	// Set at Start()
 	public GameObject towers;

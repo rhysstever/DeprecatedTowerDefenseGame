@@ -11,30 +11,31 @@ public enum CheckpointType
 
 public class LevelManager : MonoBehaviour
 {
-    // Set in inspector
-    public GameObject wallPrefab;
-    public GameObject tilePrefab;
-    public GameObject entrancePrefab;
-    public GameObject checkpointPrefab;
-    public GameObject exitPrefab;
-    public int rows;
-    public int columns;
-    public float rowOffset;
-    public float colOffset;
-    public float rowGap;
-    public float colGap;
+    // ===== Set in inspector =====
 
-    // Set at Start()
+    // Level Prefabs
+    public GameObject wallPrefab, tilePrefab, entrancePrefab, checkpointPrefab, exitPrefab;
+
+    // Math for building each level
+    public int rows, columns;
+    public float rowOffset, colOffset;
+    public float rowGap, colGap;
+
+    // Map Images
+    public List<Texture> mapImages;
+
+    // ===== Set at Start() =====
     public GameObject level;
-    List<(string[,], int)> maps;
-    public float tileLength;
-    public float tileWidth;
+    public List<Map> maps;
+    public int selectedMapIndex;
+    public float tileLength, tileWidth;
 
     // Start is called before the first frame update
     void Start()
     {
         level = new GameObject("map");
-        maps = new List<(string[,], int)>();
+        maps = new List<Map>();
+        selectedMapIndex = 0;
 
         // Set length and width variables, based on the tilePrefab
         tileLength = tilePrefab.GetComponent<BoxCollider>().size.x;
@@ -50,16 +51,20 @@ public class LevelManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Create 2d arrays for each map
-    /// ---Key---
-    /// S : Start
-    /// C : Checkpoint
-    /// E : Exit
-    /// = : Path
+    /// Create tuples for each map
+    /// Item1: 2d array for the map
+    /// Item2: number of checkpoints (EXCLUDING entrance & exit)
     /// </summary>
     void CreateMaps()
 	{
-        (string[,], int) map1 = (new string[,] {
+        // Key for layouts
+        //  S  : Start
+        //  C  : Checkpoint
+        //  E  : Exit
+        //  =  : Path
+        // " " : Tile
+        // ***** if layout changes, image will need to be redone *****
+        string[,] map1Layout = new string[,] {
             { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
             { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
             { " ", " ", "S", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "C1", " ", " " },
@@ -80,8 +85,8 @@ public class LevelManager : MonoBehaviour
             { " ", " ", "E", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "C6", " ", " " },
             { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
             { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
-        }, 6);
-        (string[,], int) map2 = (new string[,] {
+        };
+        string[,] map2Layout = new string[,] {
             { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
             { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
             { " ", " ", "S", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "C1", " ", " " },
@@ -102,20 +107,77 @@ public class LevelManager : MonoBehaviour
             { " ", " ", "C3", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "C2", " ", " " },
             { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
             { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
-        }, 6);
+        };
+        string[,] map3Layout = new string[,] {
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", "S", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "C1", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " " },
+            { " ", " ", "E", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=", "C2", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+        };
+        string[,] map4Layout = new string[,] {
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "S", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "=", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", "E", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+            { " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " " },
+        };
 
+        // Create Map objects
+        Map map1 = new Map("Back n' Forth", map1Layout, 6, mapImages[0]);
+        Map map2 = new Map("Spiral", map2Layout, 6, mapImages[1]);
+        Map map3 = new Map("U-Turn", map3Layout, 2, mapImages[2]);
+        Map map4 = new Map("Line", map4Layout, 0, mapImages[3]);
+
+        // Add maps to list
         maps.Add(map1);
         maps.Add(map2);
+        maps.Add(map3);
+        maps.Add(map4);
     }
+
+    /// <summary>
+    /// Gives the numbers of maps that have been created
+    /// </summary>
+    /// <returns>The number of maps available</returns>
+    public int MapCount() { return maps.Count; }
 
     /// <summary>
     /// Builds a level by creating walls, tiles, and checkpoints
     /// </summary>
     /// <param name="mapNum">The index of the selected map</param>
-    public void LevelCreation(int mapNum)
+    public void CreateLevel(int mapNum)
     {
-        mapNum--; // Converts from counting num to index num
-
         // Exits the method if the mapNum is outside the bounds of the maps array
         if(mapNum >= maps.Count) {
             Debug.Log("No map exists at number: " + mapNum);
@@ -123,11 +185,11 @@ public class LevelManager : MonoBehaviour
 		}
 
         // Finds the map based on the map number
-        (string[,], int) selectedMap = maps[mapNum];
+        selectedMapIndex = mapNum;
 
         // Creats the walls and builds the level
         WallCreation(level);
-        BuildLevel(selectedMap.Item1, selectedMap.Item2, level);
+        BuildLevel(maps[selectedMapIndex].Layout, maps[selectedMapIndex].CheckpointCount, level);
 
         // After the level is created, change the MenuState to game
         gameObject.GetComponent<StateManager>().ChangeMenuState(MenuState.game);

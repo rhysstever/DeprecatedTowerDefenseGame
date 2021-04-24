@@ -21,6 +21,7 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         canMove = true;
+        RotateToNextCP();
     }
 
     // Update is called once per frame
@@ -98,11 +99,16 @@ public class Enemy : MonoBehaviour
         gameObject.transform.rotation = newQuat;
     }
 
-    public void TakeDamage(float damage)
-	{
-        health -= damage;
-	}
+    /// <summary>
+    /// A simple method that reduces the health of the enemy
+    /// </summary>
+    /// <param name="damage">The amount of health being lost by the enemy</param>
+    public void TakeDamage(float damage) { health -= damage; }
 
+    /// <summary>
+    /// Removes any active afflictions, if they have expired
+    /// </summary>
+    /// <param name="afflictions">The list of active afflictions on the enemy</param>
     void ProcessAfflictions(Affliction[] afflictions)
 	{
         for(int a = 0; a < afflictions.Length; a++) {

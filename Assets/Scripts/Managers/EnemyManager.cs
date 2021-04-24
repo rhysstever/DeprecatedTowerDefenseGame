@@ -4,21 +4,19 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
-    // Set in inspector
-    public GameObject redEnemyPrefab;
-    public GameObject blueEnemyPrefab;
-    public GameObject yellowEnemyPrefab;
+    // ===== Set in inspector =====
+    // Enemy Prefabs
+    public GameObject redEnemyPrefab, blueEnemyPrefab, yellowEnemyPrefab;
+
     public float checkpointRange;
 
-    // Set at Start()
+    // ===== Set at Start() =====
     public GameObject enemies;
     public Wave currentWave;
     float timer;
 
-    public bool isWaveSpawned;
-    public bool isWaveCleared;
-    public int numLeft;
-    public int numSpawned;
+    public bool isWaveSpawned, isWaveCleared;
+    public int numLeft, numSpawned;
     
     // Start is called before the first frame update
     void Start()

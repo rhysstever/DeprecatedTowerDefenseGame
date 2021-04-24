@@ -15,15 +15,21 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     GameObject playButton;
 
-    // Game UI Elements
+    // Level Select UI Elements
     [SerializeField]
     GameObject levelSelectParentObj;
 
     [SerializeField]
-    GameObject map1Button;
+    GameObject mapButtonPrefab;
 
     [SerializeField]
-    GameObject map2Button;
+    GameObject selectedMapParent;
+
+    [SerializeField]
+    GameObject selectedMapImage;
+
+    [SerializeField]
+    GameObject playMapButton;
 
     // Game UI Elements
     [SerializeField]
@@ -53,15 +59,14 @@ public class UIManager : MonoBehaviour
             gameObject.GetComponent<StateManager>().ChangeMenuState(MenuState.levelSelect));
 
         // LevelSelect Elements
-        map1Button.GetComponent<Button>().onClick.AddListener(() =>
-            gameObject.GetComponent<LevelManager>().LevelCreation(1));
-
-        map2Button.GetComponent<Button>().onClick.AddListener(() =>
-            gameObject.GetComponent<LevelManager>().LevelCreation(3));
+        playMapButton.GetComponent<Button>().onClick.AddListener(() =>
+            gameObject.GetComponent<LevelManager>().CreateLevel(gameObject.GetComponent<LevelManager>().selectedMapIndex));
 
         // Game Elements
         startWaveButton.GetComponent<Button>().onClick.AddListener(() => 
             gameObject.GetComponent<EnemyManager>().StartWave());
+
+        // GameOver Elements
 
         // Parent UI Elements
         parentObjs = new List<GameObject>();
@@ -74,34 +79,74 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        waveText.text = gameObject.GetComponent<EnemyManager>().currentWave.Description();
-        enemyCounter.text = gameObject.GetComponent<EnemyManager>().currentWave.EnemiesLeft + " / "
-            + gameObject.GetComponent<EnemyManager>().currentWave.EnemyCount + " enemies left";
+        // Updates wave text
+        if(gameObject.GetComponent<StateManager>().currentMenuState == MenuState.game) {
+            waveText.text = gameObject.GetComponent<EnemyManager>().currentWave.Description();
+            enemyCounter.text = gameObject.GetComponent<EnemyManager>().currentWave.EnemiesLeft + " / "
+                + gameObject.GetComponent<EnemyManager>().currentWave.EnemyCount + " enemies left";
+        }
     }
 
     /// <summary>
-    /// Sets certain elements based on the current menuState
+    /// Activates all current menuState UI elements, deactivating all others
     /// </summary>
     /// <param name="menuState">the current menuState</param>
     public void ActivateUI(MenuState menuState)
 	{
-        // Deactivate all ui elements
-        for(int i = 0; i < parentObjs.Count; i++)
-            parentObjs[i].SetActive(false);
-
-        switch(menuState) {
-            case MenuState.mainMenu:
-                mainMenuParentObj.SetActive(true);
-                break;
-            case MenuState.levelSelect:
-                levelSelectParentObj.SetActive(true);
-                break;
-            case MenuState.game:
-                gameParentObj.SetActive(true);
-                break;
-            case MenuState.gameOver:
-                gameOverParentObj.SetActive(true);
-                break;
-        }
+        for(int i = 0; i < parentObjs.Count; i++) {
+            switch(menuState) {
+                case MenuState.mainMenu:
+                    if(parentObjs[i] == mainMenuParentObj)
+                        parentObjs[i].SetActive(true);
+                    else
+                        parentObjs[i].SetActive(false);
+                    break;
+                case MenuState.levelSelect:
+                    if(parentObjs[i] == levelSelectParentObj)
+                        parentObjs[i].SetActive(true);
+                    else
+                        parentObjs[i].SetActive(false);
+                    break;
+                case MenuState.game:
+                    if(parentObjs[i] == gameParentObj)
+                        parentObjs[i].SetActive(true);
+                    else
+                        parentObjs[i].SetActive(false);
+                    break;
+                case MenuState.gameOver:
+                    if(parentObjs[i] == gameOverParentObj)
+                        parentObjs[i].SetActive(true);
+                    else
+                        parentObjs[i].SetActive(false);
+                    break;
+            }
+        }        
 	}
+
+    /// <summary>
+    /// Creates a UI Button to select a map, for each map created
+    /// </summary>
+    /// <param name="mapNum">The map number</param>
+    public void CreateMapButton(int mapNum)
+	{
+        GameObject newMapButton = Instantiate(mapButtonPrefab, levelSelectParentObj.transform);
+
+        int displayNum = mapNum + 1;
+        newMapButton.name = "map" + displayNum + "Button";
+        newMapButton.transform.GetComponentInChildren<Text>().text = "Map " + displayNum;
+
+        Vector3 position = new Vector3(-1250, 450);  // starting offset
+        position += new Vector3((mapNum % 6) * 300, (mapNum / 6) * -200); // offset based on map number
+        position.x /= 2;    // adjust position from world to child position
+        position.y /= 2;    // adjust position from world to child position
+        newMapButton.transform.position += position;
+
+        newMapButton.GetComponent<Button>().onClick.AddListener(() => SelectMap(mapNum));
+    }
+
+    void SelectMap(int mapNum)
+	{
+        gameObject.GetComponent<LevelManager>().selectedMapIndex = mapNum;
+        selectedMapImage.GetComponent<RawImage>().texture = gameObject.GetComponent<LevelManager>().mapImages[mapNum];
+    }
 }

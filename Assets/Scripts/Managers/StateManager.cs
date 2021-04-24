@@ -49,6 +49,8 @@ public class StateManager : MonoBehaviour
             case MenuState.mainMenu:
                 break;
             case MenuState.levelSelect:
+                for(int i = 0; i < gameObject.GetComponent<LevelManager>().MapCount(); i++)
+                    gameObject.GetComponent<UIManager>().CreateMapButton(i);
                 break;
             case MenuState.game:
                 break;
