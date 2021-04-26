@@ -8,15 +8,10 @@ public class EnemyManager : MonoBehaviour
     // Enemy Prefabs
     public GameObject redEnemyPrefab, blueEnemyPrefab, yellowEnemyPrefab;
 
-    public float checkpointRange;
-
     // ===== Set at Start() =====
-    public GameObject enemies;
     public Wave currentWave;
-    float timer;
-
-    public bool isWaveSpawned, isWaveCleared;
-    public int numLeft, numSpawned;
+    private GameObject enemies;
+    private float spawnTimer;
     
     // Start is called before the first frame update
     void Start()
@@ -24,34 +19,27 @@ public class EnemyManager : MonoBehaviour
         enemies = new GameObject("enemies");
 
         currentWave = CreateWaves();
-        timer = currentWave.SpawnDelay;     // Allows the first enemy to spawn immediately
+        spawnTimer = currentWave.SpawnDelay;     // Allows the first enemy to spawn immediately
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(gameObject.GetComponent<StateManager>().currentMenuState == MenuState.game) {
+        if(gameObject.GetComponent<GameManager>().currentMenuState == MenuState.game) {
             // The current wave has been cleared
             if(currentWave.HasCleared) {
                 // If there is a next wave, that wave is the new current wave
                 if(currentWave.NextWave != null) {
                     currentWave = currentWave.NextWave;
-                    timer = currentWave.SpawnDelay;
+                    spawnTimer = currentWave.SpawnDelay;
                 }
 				// No Waves left, the game is over
 				else {
-                    gameObject.GetComponent<StateManager>().ChangeMenuState(MenuState.gameOver);
+                    gameObject.GetComponent<GameManager>().ChangeMenuState(MenuState.gameOver);
 				}
             }
 			else {
                 CheckEnemies();
-            }
-
-            if(currentWave != null) {
-                isWaveSpawned = currentWave.HasSpawned;
-                isWaveCleared = currentWave.HasCleared;
-                numLeft = currentWave.EnemiesLeft;
-                numSpawned = currentWave.EnemiesSpawned;
             }
         }
     }
@@ -61,12 +49,12 @@ public class EnemyManager : MonoBehaviour
         if(currentWave.HasSpawned
             && !currentWave.HasCleared) {
             // Increments timer
-            timer += Time.deltaTime;
+            spawnTimer += Time.deltaTime;
 
-            if(timer >= currentWave.SpawnDelay
+            if(spawnTimer >= currentWave.SpawnDelay
                 && currentWave.EnemiesSpawned < currentWave.EnemyCount) {
                 // Resets timer and spawns an enemy
-                timer = 0.0f;
+                spawnTimer = 0.0f;
                 SpawnEnemy(currentWave.EnemyPrefab);
             }
         }
@@ -135,11 +123,9 @@ public class EnemyManager : MonoBehaviour
 				RemoveEnemy(enemy);
 			}
 			// If the enemy has reached the exit
-			else if(Vector3.Distance(
-						enemy.transform.position,
-						exitPos) <= checkpointRange) {
+			else if(Vector3.Distance(enemy.transform.position, exitPos) <= 0.5f) {
 				RemoveEnemy(enemy);
-				gameObject.GetComponent<Player>().TakeDamage(enemy.GetComponent<Enemy>().damage);
+				gameObject.GetComponent<GameManager>().TakeDamage(enemy.GetComponent<Enemy>().damage);
 			}
 		}
 	}

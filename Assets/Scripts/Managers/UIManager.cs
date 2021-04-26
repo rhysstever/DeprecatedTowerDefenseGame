@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class UIManager : MonoBehaviour
 {
-    private List<GameObject> parentObjs;
+    // ===== Set in inspector =====
+    // Map Button Creation
+    public float mapButtonXStart, mapButtonYStart, mapButtonXOffset, mapButtonYOffset;
+    public int mapButtonRowCount;
 
     // MainMenu UI Elements
     [SerializeField]
@@ -29,11 +33,20 @@ public class UIManager : MonoBehaviour
     GameObject selectedMapImage;
 
     [SerializeField]
+    TextMeshProUGUI selectedMapName;
+
+    [SerializeField]
+    TextMeshProUGUI selectedMapDifficulty;
+
+    [SerializeField]
     GameObject playMapButton;
 
     // Game UI Elements
     [SerializeField]
     GameObject gameParentObj;
+
+    [SerializeField]
+    TextMeshProUGUI healthText;
 
     [SerializeField]
     GameObject startWaveButton;
@@ -44,6 +57,39 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI enemyCounter;
 
+    [SerializeField]
+    GameObject selectedObjectParent;
+
+    [SerializeField]
+    TextMeshProUGUI selectedObjectName;
+
+    [SerializeField]
+    TextMeshProUGUI selectedObjectDescription;
+
+    [SerializeField]
+    GameObject buildTowerButtonsParent;
+
+    [SerializeField]
+    GameObject buildAirTowerButton;
+
+    [SerializeField]
+    GameObject buildEarthTowerButton;
+
+    [SerializeField]
+    GameObject buildFireTowerButton;
+
+    [SerializeField]
+    GameObject buildWaterTowerButton;
+
+    [SerializeField]
+    GameObject upgradeTowerButtonsParent;
+
+    [SerializeField]
+    GameObject upgrade1Button;
+
+    [SerializeField]
+    GameObject upgrade2Button;
+
     // GameOver UI Elements
     [SerializeField]
     GameObject gameOverParentObj;
@@ -51,12 +97,15 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     GameObject backToMainMenuButton;
 
+    // ===== Set at Start() ===== 
+    private List<GameObject> parentObjs;
+
     // Start is called before the first frame update
     void Start()
     {
         // MainMenu Elements
         playButton.GetComponent<Button>().onClick.AddListener(() => 
-            gameObject.GetComponent<StateManager>().ChangeMenuState(MenuState.levelSelect));
+            gameObject.GetComponent<GameManager>().ChangeMenuState(MenuState.levelSelect));
 
         // LevelSelect Elements
         playMapButton.GetComponent<Button>().onClick.AddListener(() =>
@@ -65,8 +114,18 @@ public class UIManager : MonoBehaviour
         // Game Elements
         startWaveButton.GetComponent<Button>().onClick.AddListener(() => 
             gameObject.GetComponent<EnemyManager>().StartWave());
+        buildAirTowerButton.GetComponent<Button>().onClick.AddListener(() =>
+            gameObject.GetComponent<TowerManager>().BuildTower(TowerType.Air));
+        buildEarthTowerButton.GetComponent<Button>().onClick.AddListener(() =>
+            gameObject.GetComponent<TowerManager>().BuildTower(TowerType.Earth));
+        buildFireTowerButton.GetComponent<Button>().onClick.AddListener(() =>
+            gameObject.GetComponent<TowerManager>().BuildTower(TowerType.Fire));
+        buildWaterTowerButton.GetComponent<Button>().onClick.AddListener(() =>
+            gameObject.GetComponent<TowerManager>().BuildTower(TowerType.Water));
 
         // GameOver Elements
+        backToMainMenuButton.GetComponent<Button>().onClick.AddListener(() =>
+            gameObject.GetComponent<GameManager>().ChangeMenuState(MenuState.mainMenu));
 
         // Parent UI Elements
         parentObjs = new List<GameObject>();
@@ -79,11 +138,45 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Updates wave text
-        if(gameObject.GetComponent<StateManager>().currentMenuState == MenuState.game) {
-            waveText.text = gameObject.GetComponent<EnemyManager>().currentWave.Description();
-            enemyCounter.text = gameObject.GetComponent<EnemyManager>().currentWave.EnemiesLeft + " / "
-                + gameObject.GetComponent<EnemyManager>().currentWave.EnemyCount + " enemies left";
+        switch(gameObject.GetComponent<GameManager>().currentMenuState) {
+            case MenuState.levelSelect:
+                // If the player has selected a map, the selected map ui elements are shown
+                selectedMapParent.SetActive(gameObject.GetComponent<LevelManager>().selectedMapIndex >= 0);
+                break;
+            case MenuState.game:
+                // Updates current wave text
+                waveText.text = gameObject.GetComponent<EnemyManager>().currentWave.Description();
+                enemyCounter.text = gameObject.GetComponent<EnemyManager>().currentWave.EnemiesLeft + " / "
+                    + gameObject.GetComponent<EnemyManager>().currentWave.EnemyCount + " enemies left";
+                healthText.text = "Health: " + gameObject.GetComponent<GameManager>().health;
+                
+                // Updates selected object text
+                // If the selected gameObject exists, and is a tower, then its name is displayed
+                GameObject selectedGO = gameObject.GetComponent<TowerManager>().currentSelectedGameObject;
+
+                // If the selected gameObject doesnt exist, no text displays
+                if(selectedGO == null) {
+                    selectedObjectName.text = "";
+                    selectedObjectDescription.text = "";
+                    buildTowerButtonsParent.SetActive(false);
+                    upgradeTowerButtonsParent.SetActive(false);
+                } // If the selected gameObject is a tile, no text displays but build buttons appear
+                else if(selectedGO.GetComponent<Tile>() != null) {
+                    selectedObjectName.text = "";
+                    selectedObjectDescription.text = "";
+                    buildTowerButtonsParent.SetActive(true);
+                    upgradeTowerButtonsParent.SetActive(false);
+                } // If the selected gameObject is a tower, it displays its stats
+                else if(selectedGO.GetComponent<Tower>() != null) {
+                    selectedObjectName.text = selectedGO.name;
+                    selectedObjectDescription.text =
+                        "Damage: " + selectedGO.GetComponent<Tower>().damage
+                        + "\nAttack Time: " + (selectedGO.GetComponent<Tower>().attackTime * 100)
+                        + "\nRange: " + selectedGO.GetComponent<Tower>().range;
+                    buildTowerButtonsParent.SetActive(false);
+                    upgradeTowerButtonsParent.SetActive(true);
+                }
+                break;
         }
     }
 
@@ -135,18 +228,38 @@ public class UIManager : MonoBehaviour
         newMapButton.name = "map" + displayNum + "Button";
         newMapButton.transform.GetComponentInChildren<Text>().text = "Map " + displayNum;
 
-        Vector3 position = new Vector3(-1250, 450);  // starting offset
-        position += new Vector3((mapNum % 6) * 300, (mapNum / 6) * -200); // offset based on map number
-        position.x /= 2;    // adjust position from world to child position
-        position.y /= 2;    // adjust position from world to child position
+        Vector3 position = new Vector3(mapButtonXStart, mapButtonYStart);   // starting offset
+        position += new Vector3(                                            // offset based on map number
+            (mapNum % mapButtonRowCount) * mapButtonXOffset, 
+            (mapNum / mapButtonRowCount) * mapButtonYOffset); 
+        position /= 2;    // adjust position since this is a child object
         newMapButton.transform.position += position;
 
         newMapButton.GetComponent<Button>().onClick.AddListener(() => SelectMap(mapNum));
     }
 
+    /// <summary>
+    /// Changes the selected map and UI elements
+    /// </summary>
+    /// <param name="mapNum">The selected map by number</param>
     void SelectMap(int mapNum)
 	{
         gameObject.GetComponent<LevelManager>().selectedMapIndex = mapNum;
-        selectedMapImage.GetComponent<RawImage>().texture = gameObject.GetComponent<LevelManager>().mapImages[mapNum];
+        Map selectedMap = gameObject.GetComponent<LevelManager>().maps[mapNum];
+        selectedMapName.text = selectedMap.Name;
+        selectedMapDifficulty.text = selectedMap.Difficulty.ToString();
+        selectedMapImage.GetComponent<RawImage>().texture = selectedMap.Image;
+    }
+
+    public void UpdateTowerUpgradeButtons((TowerType, TowerType) upgradeTypes)
+	{
+        upgrade1Button.transform.GetComponentInChildren<Text>().text = upgradeTypes.Item1.ToString();
+        upgrade2Button.transform.GetComponentInChildren<Text>().text = upgradeTypes.Item2.ToString();
+        upgrade1Button.GetComponent<Button>().onClick.RemoveAllListeners();
+        upgrade2Button.GetComponent<Button>().onClick.RemoveAllListeners();
+        upgrade1Button.GetComponent<Button>().onClick.AddListener(() =>
+            gameObject.GetComponent<TowerManager>().UpgradeTower(upgradeTypes.Item1));
+        upgrade2Button.GetComponent<Button>().onClick.AddListener(() =>
+            gameObject.GetComponent<TowerManager>().UpgradeTower(upgradeTypes.Item2));
     }
 }

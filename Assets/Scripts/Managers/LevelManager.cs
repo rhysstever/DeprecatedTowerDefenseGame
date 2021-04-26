@@ -19,7 +19,6 @@ public class LevelManager : MonoBehaviour
     // Math for building each level
     public int rows, columns;
     public float rowOffset, colOffset;
-    public float rowGap, colGap;
 
     // Map Images
     public List<Texture> mapImages;
@@ -28,14 +27,14 @@ public class LevelManager : MonoBehaviour
     public GameObject level;
     public List<Map> maps;
     public int selectedMapIndex;
-    public float tileLength, tileWidth;
+    private float tileLength, tileWidth;
 
     // Start is called before the first frame update
     void Start()
     {
         level = new GameObject("map");
         maps = new List<Map>();
-        selectedMapIndex = 0;
+        selectedMapIndex = -1;
 
         // Set length and width variables, based on the tilePrefab
         tileLength = tilePrefab.GetComponent<BoxCollider>().size.x;
@@ -154,10 +153,10 @@ public class LevelManager : MonoBehaviour
         };
 
         // Create Map objects
-        Map map1 = new Map("Back n' Forth", map1Layout, 6, mapImages[0]);
-        Map map2 = new Map("Spiral", map2Layout, 6, mapImages[1]);
-        Map map3 = new Map("U-Turn", map3Layout, 2, mapImages[2]);
-        Map map4 = new Map("Line", map4Layout, 0, mapImages[3]);
+        Map map1 = new Map("Back n' Forth", map1Layout, 6, MapDifficulty.Easy, mapImages[0]);
+        Map map2 = new Map("Spiral", map2Layout, 6, MapDifficulty.Easy, mapImages[1]);
+        Map map3 = new Map("U-Turn", map3Layout, 2, MapDifficulty.Medium, mapImages[2]);
+        Map map4 = new Map("Line", map4Layout, 0, MapDifficulty.Hard, mapImages[3]);
 
         // Add maps to list
         maps.Add(map1);
@@ -165,12 +164,6 @@ public class LevelManager : MonoBehaviour
         maps.Add(map3);
         maps.Add(map4);
     }
-
-    /// <summary>
-    /// Gives the numbers of maps that have been created
-    /// </summary>
-    /// <returns>The number of maps available</returns>
-    public int MapCount() { return maps.Count; }
 
     /// <summary>
     /// Builds a level by creating walls, tiles, and checkpoints
@@ -192,7 +185,7 @@ public class LevelManager : MonoBehaviour
         BuildLevel(maps[selectedMapIndex].Layout, maps[selectedMapIndex].CheckpointCount, level);
 
         // After the level is created, change the MenuState to game
-        gameObject.GetComponent<StateManager>().ChangeMenuState(MenuState.game);
+        gameObject.GetComponent<GameManager>().ChangeMenuState(MenuState.game);
     }
 
     /// <summary>
@@ -394,8 +387,8 @@ public class LevelManager : MonoBehaviour
     Vector3 ConvertCoordToWorldPos(Vector2 coordinates)
 	{
         Vector3 position = new Vector3();
-        position.x = coordinates.x * (tileLength + rowGap) + rowGap + rowOffset;
-        position.z = coordinates.y * (tileWidth + colGap) + colGap + colOffset;
+        position.x = coordinates.x * (tileLength) + rowOffset;
+        position.z = coordinates.y * (tileWidth) + colOffset;
         return position;
 	}
 }

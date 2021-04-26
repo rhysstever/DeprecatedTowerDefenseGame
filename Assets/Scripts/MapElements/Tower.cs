@@ -18,9 +18,9 @@ public enum TowerType
 	Fire		=  300, 
 	Water		= 4000,
 	Lightning	=  301,
+	Volcano		=  320,
 	Ice			= 4001,
-	Quicksand	= 4020,
-	Volcano		=  320
+	Quicksand	= 4020
 }
 
 public class Tower : MonoBehaviour
@@ -34,8 +34,8 @@ public class Tower : MonoBehaviour
 	public int numOfTargets;
 
 	// Set at Start()
-    float shotTimer;
 	public GameObject currentEnemy;
+    private float shotTimer;
     
 	// Set on creation
 	public GameObject tile;
@@ -71,8 +71,7 @@ public class Tower : MonoBehaviour
 		currentEnemy = null;
 		GameObject enemies = GameObject.Find("enemies");
 		for(int child = enemies.transform.childCount - 1; child >= 0; child--) {
-			if(Vector3.Distance(
-				gameObject.transform.position,
+			if(Vector3.Distance(gameObject.transform.position,
 				enemies.transform.GetChild(child).position) <= range)
 				currentEnemy = enemies.transform.GetChild(child).gameObject;
 		}
@@ -103,7 +102,7 @@ public class Tower : MonoBehaviour
 			enemy.GetComponent<Affliction>().amount = gameObject.GetComponent<Affliction>().amount;
 		}
 
-		// Resets timer
+		// Reset timer
 		shotTimer = 0.0f;
 	}
 

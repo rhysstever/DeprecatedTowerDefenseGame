@@ -10,10 +10,11 @@ public enum MenuState
     gameOver
 }
 
-public class StateManager : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     public MenuState currentMenuState;
-    
+    public int health;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +31,9 @@ public class StateManager : MonoBehaviour
             case MenuState.levelSelect:
                 break;
             case MenuState.game:
+                // Changes the menu state to Game Over if the player loses all health
+                if(health <= 0)
+                    gameObject.GetComponent<GameManager>().ChangeMenuState(MenuState.gameOver);
                 break;
             case MenuState.gameOver:
                 break;
@@ -49,7 +53,7 @@ public class StateManager : MonoBehaviour
             case MenuState.mainMenu:
                 break;
             case MenuState.levelSelect:
-                for(int i = 0; i < gameObject.GetComponent<LevelManager>().MapCount(); i++)
+                for(int i = 0; i < gameObject.GetComponent<LevelManager>().maps.Count; i++)
                     gameObject.GetComponent<UIManager>().CreateMapButton(i);
                 break;
             case MenuState.game:
@@ -58,4 +62,13 @@ public class StateManager : MonoBehaviour
                 break;
         }
 	}
+
+    /// <summary>
+	/// Deals damage to the player
+	/// </summary>
+	/// <param name="damage">The damage the player is taking</param>
+	public void TakeDamage(int damage)
+    {
+        health -= damage;
+    }
 }

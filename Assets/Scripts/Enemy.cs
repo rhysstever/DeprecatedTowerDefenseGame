@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    // Set in inspector
+    // ===== Set in inspector =====
     public string enemyName;
     public float health;
 	public int damage;
@@ -14,7 +14,7 @@ public class Enemy : MonoBehaviour
     // Set when created
     public GameObject currentCheckpoint;
 
-    // Set at Start()
+    // ===== Set at Start() ===== 
     bool canMove;
     
     // Start is called before the first frame update
@@ -35,14 +35,10 @@ public class Enemy : MonoBehaviour
 
         // If the enemy is close enough to the checkpoint, the current checkpoint is update to 
         // the next checkpoint and the enemy is rotated accordingly
-        if(Vector3.Distance(gameObject.transform.position, currentCheckpoint.transform.position)
-            <= GameObject.Find("GameManager").GetComponent<EnemyManager>().checkpointRange) {
+        if(Vector3.Distance(gameObject.transform.position, currentCheckpoint.transform.position) <= 0.5f)
             canMove = false;
-        }
-        // If the enemy is still too far away from the checkpoint, it is moved to be closer
-        else {
+		else  // If the enemy is still too far away from the checkpoint, it is moved to be closer
             canMove = true;
-        }
 
 		if(!canMove) {
             currentCheckpoint = currentCheckpoint.GetComponent<Checkpoint>().nextCheckpoint;

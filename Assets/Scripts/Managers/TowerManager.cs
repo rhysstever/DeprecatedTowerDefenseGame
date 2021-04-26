@@ -6,38 +6,35 @@ using UnityEngine;
 public class TowerManager : MonoBehaviour
 {
 	// ===== Set in inspector =====
-	// Basic Towers
+	// Basic tower prefabs
 	public GameObject airTowerPrefab, earthTowerPrefab, fireTowerPrefab, waterTowerPrefab;
-	// Advanced Towers
+	// Advanced tower prefabs
 	public GameObject lightningTowerPrefab, iceTowerPrefab, quicksandTowerPrefab, volcanoTowerPrefab;
+	public GameObject bulletPrefab;
 
 	// Set at Start()
-	public GameObject towers;
-	Dictionary<KeyCode, TowerType> inputTypeDictionary;
-
-	// Set later in script
+	private GameObject towers;
+	private GameObject bullets;
 	public GameObject currentSelectedGameObject;
 
     // Start is called before the first frame update
     void Start()
     {
 		towers = new GameObject("towers");
-		inputTypeDictionary = new Dictionary<KeyCode, TowerType>();
-
-		inputTypeDictionary.Add(KeyCode.Q, TowerType.Air);
-		inputTypeDictionary.Add(KeyCode.W, TowerType.Water);
-		inputTypeDictionary.Add(KeyCode.E, TowerType.Earth);
-		inputTypeDictionary.Add(KeyCode.R, TowerType.Fire);
+		bullets = new GameObject("bullets");
+		currentSelectedGameObject = null;
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
-		if(gameObject.GetComponent<StateManager>().currentMenuState == MenuState.game) {
+		if(gameObject.GetComponent<GameManager>().currentMenuState == MenuState.game) {
 			if(Input.GetMouseButtonDown(0))
 				SelectGameObject();
-			else if(Input.anyKeyDown)
-				Construction();
+
+			if(currentSelectedGameObject != null
+				&& currentSelectedGameObject.GetComponent<Tower>() != null)
+				FindEligibleUpgradeTypes(currentSelectedGameObject.GetComponent<Tower>().towerType);
 		}
 	}
 
@@ -46,45 +43,37 @@ public class TowerManager : MonoBehaviour
 	/// </summary>
 	void SelectGameObject()
 	{
-		// If the old selection is a tile, its material is reverted back to normal
-		if(currentSelectedGameObject != null
-			&& currentSelectedGameObject.tag == "Tile") {
-			currentSelectedGameObject.GetComponent<Tile>().SetSelect(false);
-		}
-
 		Camera currentCam = Camera.main;
 
 		// Creates ray
 		Ray ray = currentCam.ScreenPointToRay(Input.mousePosition);
 		RaycastHit rayHit;
 
-		// Creates a layerMask to include all but the UI layer
-		int layerMaskUI = 1 << 5;
-		layerMaskUI = ~layerMaskUI;
-
 		// Creates a layerMask to include all but the Checkpoints layer
 		int layerMaskCP = 1 << 8;
 		layerMaskCP = ~layerMaskCP;
 
 		// If the ray interects with something in the scene that is not UI nor a checkpoint
-		if(Physics.Raycast(ray, out rayHit, Mathf.Infinity, layerMaskUI)
-			&& Physics.Raycast(ray, out rayHit, Mathf.Infinity, layerMaskCP)) {
-			// If the selection is the gameObject that is already selected
-			if(currentSelectedGameObject == FindSelectableGameObject(rayHit.transform.gameObject))
-				currentSelectedGameObject = null;
-			// Otherwise the tower or tile is selected (even if a part of it is selected)
-			else
-				currentSelectedGameObject = FindSelectableGameObject(rayHit.transform.gameObject);
+		if(Physics.Raycast(ray, out rayHit, Mathf.Infinity, layerMaskCP)) {
+			GameObject newSelectedGameObj = FindSelectableGameObject(rayHit.transform.gameObject);
+			if(newSelectedGameObj == null)
+				return;
+			else {
+				// If the old selection is a tile, its material is reverted back to normal
+				if(currentSelectedGameObject != null
+					&& currentSelectedGameObject.tag == "Tile") {
+					currentSelectedGameObject.GetComponent<Tile>().SetSelect(false);
+				}
+
+				// Sets the new selectedGameObj
+				currentSelectedGameObject = newSelectedGameObj;
+			}
 
 			// If the new selection is a tile
 			if(currentSelectedGameObject != null
 				&& currentSelectedGameObject.tag == "Tile") {
 				currentSelectedGameObject.GetComponent<Tile>().SetSelect(true);
 			}
-		}
-		// Not clicking on anything will unselect the current gameObject
-		else {
-			currentSelectedGameObject = null;
 		}
 	}
 
@@ -111,37 +100,10 @@ public class TowerManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Checks which key is being pressed down and decides if a tower is being built or upgraded
-	/// </summary>
-	void Construction()
-	{
-		// Loops thr each key in the dictionary, 
-		// passing the tower type of the corresponding pressed key
-		TowerType towerType = TowerType.None;
-		foreach(KeyCode key in inputTypeDictionary.Keys) {
-			if(Input.GetKeyDown(key)) {
-				towerType = inputTypeDictionary[key];
-			}
-		}
-
-		// If no key was pressed, the method is exited
-		if(towerType == TowerType.None)
-			return;
-
-		// If a tile is selected, a tower is built on it
-		if(currentSelectedGameObject.GetComponent<Tile>() != null
-			&& currentSelectedGameObject.GetComponent<Tile>().tower == null)
-			BuildTower(towerType);
-		// If a tower is selected, it is upgraded
-		else if(currentSelectedGameObject.GetComponent<Tower>() != null)
-			UpgradeTower(towerType);
-	}
-
-	/// <summary>
 	/// Builds a tower of a given type
 	/// </summary>
 	/// <param name="element">The type of the tower being built</param>
-	void BuildTower(TowerType element)
+	public void BuildTower(TowerType element)
 	{
 		GameObject towerPrefab = null;
 		switch(element) {
@@ -182,16 +144,28 @@ public class TowerManager : MonoBehaviour
 			// Calculates the to be new tower's position based on the tile is being built on
 			Vector3 towerPos = currentSelectedGameObject.transform.position;
 			towerPos.y += towerPrefab.transform.Find("base").gameObject.GetComponent<BoxCollider>().size.y / 2;
+
 			// Creates a new tower
 			GameObject newTower = Instantiate(towerPrefab, towerPos, Quaternion.identity, towers.transform);
 			newTower.name = towerPrefab.GetComponent<Tower>().towerType + " tower";
+
 			// Adds the tile to the tower and the tower to the tile
 			newTower.GetComponent<Tower>().tile = currentSelectedGameObject;
 			currentSelectedGameObject.GetComponent<Tile>().tower = newTower;
+
+			// Resets currently selected tile before it changes to the newly built tower
+			if(currentSelectedGameObject.tag == "Tile") {
+				currentSelectedGameObject.GetComponent<Tile>().SetSelect(false);
+			}
+			currentSelectedGameObject = newTower;
 		}
 	}
 
-	void UpgradeTower(TowerType newElement)
+	/// <summary>
+	/// Upgrades a tower with a second element
+	/// </summary>
+	/// <param name="newElement">The element the tower is being upgraded by</param>
+	public void UpgradeTower(TowerType newElement)
 	{
 		// Adds together the int values of the tower's element and the new element
 		int typeTotal = (int)newElement + (int)currentSelectedGameObject.GetComponent<Tower>().towerType;
@@ -211,5 +185,39 @@ public class TowerManager : MonoBehaviour
 		// Removes the tile's tower and builds the combination tower 
 		currentSelectedGameObject.GetComponent<Tile>().tower = null;
 		BuildTower(elementCombo);
+	}
+
+	/// <summary>
+	/// Finds the other 2 elements that can be used to upgrade the current tower
+	/// </summary>
+	/// <param name="baseElement">The element of the current tower</param>
+	void FindEligibleUpgradeTypes(TowerType baseElement)
+	{
+		(TowerType, TowerType) types = (TowerType.None, TowerType.None);
+		foreach(int type in Enum.GetValues(typeof(TowerType))) {
+			// Skips the checks if the value is None or the same type
+			if(type == 0
+				|| type == (int)baseElement)
+				continue;
+
+			// Finds the numeric difference between the base element and the type from 
+			// the list of values, if a type exists of that numeric difference, it is 
+			// added as one of the 2 types to upgrade
+			int typeNum = Math.Abs((int)baseElement - type);
+			if(Enum.IsDefined(typeof(TowerType), typeNum)) {
+				if(types.Item1 == TowerType.None)
+					types.Item1 = (TowerType)typeNum;
+				else
+					types.Item2 = (TowerType)typeNum;
+			}
+
+			// Breaks out of the foreach if both types have been found
+			if(types.Item1 != TowerType.None
+				&& types.Item2 != TowerType.None)
+				break;
+		}
+
+		// Sends the 2 types to the UI Manager to update the upgrade buttons
+		gameObject.GetComponent<UIManager>().UpdateTowerUpgradeButtons(types);
 	}
 }
