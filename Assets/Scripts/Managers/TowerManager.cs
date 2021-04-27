@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TowerManager : MonoBehaviour
 {
@@ -29,12 +30,14 @@ public class TowerManager : MonoBehaviour
 	void Update()
 	{
 		if(gameObject.GetComponent<GameManager>().currentMenuState == MenuState.game) {
+			// If the left mouse button is clicked, it checks to see if an object was clicked
 			if(Input.GetMouseButtonDown(0))
 				SelectGameObject();
 
+			// If a tower is currently selected, it looks to update the upgrade buttons
 			if(currentSelectedGameObject != null
 				&& currentSelectedGameObject.GetComponent<Tower>() != null)
-				FindEligibleUpgradeTypes(currentSelectedGameObject.GetComponent<Tower>().towerType);
+				gameObject.GetComponent<UIManager>().UpdateTowerUpgradeButtons(FindEligibleUpgradeTypes(currentSelectedGameObject));
 		}
 	}
 
@@ -55,25 +58,23 @@ public class TowerManager : MonoBehaviour
 
 		// If the ray interects with something in the scene that is not UI nor a checkpoint
 		if(Physics.Raycast(ray, out rayHit, Mathf.Infinity, layerMaskCP)) {
-			GameObject newSelectedGameObj = FindSelectableGameObject(rayHit.transform.gameObject);
-			if(newSelectedGameObj == null)
+			// Nothing gets clicked if the user clicks UI
+			if(EventSystem.current.IsPointerOverGameObject())
 				return;
-			else {
-				// If the old selection is a tile, its material is reverted back to normal
-				if(currentSelectedGameObject != null
-					&& currentSelectedGameObject.tag == "Tile") {
-					currentSelectedGameObject.GetComponent<Tile>().SetSelect(false);
-				}
+			
+			// "Turn off" the currently highlighted tile
+			HighlightTile(currentSelectedGameObject, false);
+			
+			// Finds and sets a selectable gameObject as the current gameObject selection,
+			// if it is a tile with a tower built on it, the tower is selected
+			GameObject selectableGameObj = FindSelectableGameObject(rayHit.transform.gameObject);
+			currentSelectedGameObject = selectableGameObj;
+			if(selectableGameObj.tag == "Tile"
+				&& selectableGameObj.GetComponent<Tile>().tower != null)
+				currentSelectedGameObject = selectableGameObj.GetComponent<Tile>().tower;
 
-				// Sets the new selectedGameObj
-				currentSelectedGameObject = newSelectedGameObj;
-			}
-
-			// If the new selection is a tile
-			if(currentSelectedGameObject != null
-				&& currentSelectedGameObject.tag == "Tile") {
-				currentSelectedGameObject.GetComponent<Tile>().SetSelect(true);
-			}
+			// Highlight the beneath tile if a tile or a tower is selected
+			HighlightTile(currentSelectedGameObject, true);
 		}
 	}
 
@@ -81,7 +82,7 @@ public class TowerManager : MonoBehaviour
 	/// Given a gameObject, finds if that gameObject is a tile or tower, or if it has a parent that is either
 	/// </summary>
 	/// <param name="currentSelection">The given gameObject</param>
-	/// <returns></returns>
+	/// <returns>A selectable gameObject (not a part of one)</returns>
 	GameObject FindSelectableGameObject(GameObject currentSelection)
 	{
 		// Loops while the current selection is not a tower nor a tile
@@ -97,6 +98,24 @@ public class TowerManager : MonoBehaviour
 
 		// If the current selection is a tower or tile object, the object is returned
 		return currentSelection;
+	}
+
+	/// <summary>
+	/// Toggles whether a tile is highlighted
+	/// </summary>
+	/// <param name="selectedGameObj">The currently selected gameObject</param>
+	/// <param name="willBeHighlighted">A bool for if the gameObject should be highlighted</param>
+	void HighlightTile(GameObject selectedGameObj, bool willBeHighlighted)
+	{
+		if(selectedGameObj == null)
+			return;
+
+		// If the new selection is a tile or a tower, the tile itself 
+		// (or the tower's tile) is highlighted
+		if(selectedGameObj.GetComponent<Tile>() != null)
+			selectedGameObj.GetComponent<Tile>().SetSelect(willBeHighlighted);
+		else if(selectedGameObj.GetComponent<Tower>() != null)
+			selectedGameObj.GetComponent<Tower>().tile.GetComponent<Tile>().SetSelect(willBeHighlighted);
 	}
 
 	/// <summary>
@@ -154,10 +173,9 @@ public class TowerManager : MonoBehaviour
 			currentSelectedGameObject.GetComponent<Tile>().tower = newTower;
 
 			// Resets currently selected tile before it changes to the newly built tower
-			if(currentSelectedGameObject.tag == "Tile") {
-				currentSelectedGameObject.GetComponent<Tile>().SetSelect(false);
-			}
+			HighlightTile(currentSelectedGameObject, false);
 			currentSelectedGameObject = newTower;
+			HighlightTile(currentSelectedGameObject, true);
 		}
 	}
 
@@ -190,10 +208,16 @@ public class TowerManager : MonoBehaviour
 	/// <summary>
 	/// Finds the other 2 elements that can be used to upgrade the current tower
 	/// </summary>
-	/// <param name="baseElement">The element of the current tower</param>
-	void FindEligibleUpgradeTypes(TowerType baseElement)
+	/// <param name="tower">The currently selected tower that can be upgraded</param>
+	(TowerType, TowerType) FindEligibleUpgradeTypes(GameObject tower)
 	{
+		if(!tower.GetComponent<Tower>().isUpgradable)
+			return (TowerType.None, TowerType.None);
+
+		// Finds the tower's element
+		TowerType baseElement = tower.GetComponent<Tower>().towerType;
 		(TowerType, TowerType) types = (TowerType.None, TowerType.None);
+
 		foreach(int type in Enum.GetValues(typeof(TowerType))) {
 			// Skips the checks if the value is None or the same type
 			if(type == 0
@@ -217,7 +241,6 @@ public class TowerManager : MonoBehaviour
 				break;
 		}
 
-		// Sends the 2 types to the UI Manager to update the upgrade buttons
-		gameObject.GetComponent<UIManager>().UpdateTowerUpgradeButtons(types);
+		return types;
 	}
 }

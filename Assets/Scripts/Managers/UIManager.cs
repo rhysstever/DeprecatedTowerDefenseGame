@@ -171,10 +171,11 @@ public class UIManager : MonoBehaviour
                     selectedObjectName.text = selectedGO.name;
                     selectedObjectDescription.text =
                         "Damage: " + selectedGO.GetComponent<Tower>().damage
-                        + "\nAttack Time: " + (selectedGO.GetComponent<Tower>().attackTime * 100)
+                        + "\nAttack Time: " + (selectedGO.GetComponent<Tower>().attackTime) + "s"
                         + "\nRange: " + selectedGO.GetComponent<Tower>().range;
                     buildTowerButtonsParent.SetActive(false);
-                    upgradeTowerButtonsParent.SetActive(true);
+                    // only shows the upgrade buttons if the tower can be upgraded
+                    upgradeTowerButtonsParent.SetActive(selectedGO.GetComponent<Tower>().isUpgradable);
                 }
                 break;
         }
@@ -251,14 +252,28 @@ public class UIManager : MonoBehaviour
         selectedMapImage.GetComponent<RawImage>().texture = selectedMap.Image;
     }
 
+    /// <summary>
+    /// Updates the text and onClicks of the upgrade buttons
+    /// </summary>
+    /// <param name="upgradeTypes">A tuple of both elements the tower can be upgraded with</param>
     public void UpdateTowerUpgradeButtons((TowerType, TowerType) upgradeTypes)
 	{
+        // If either type is None, nothing happens
+        if(upgradeTypes.Item1 == TowerType.None
+            || upgradeTypes.Item2 == TowerType.None)
+            return;
+
+        // For each upgrade button
+        // 1. Updates the button's text and remove
+        // 2. Removes all listeners from the button
+        // 3. Adds UpgradeTower (of the right element) to the listener
         upgrade1Button.transform.GetComponentInChildren<Text>().text = upgradeTypes.Item1.ToString();
-        upgrade2Button.transform.GetComponentInChildren<Text>().text = upgradeTypes.Item2.ToString();
         upgrade1Button.GetComponent<Button>().onClick.RemoveAllListeners();
-        upgrade2Button.GetComponent<Button>().onClick.RemoveAllListeners();
         upgrade1Button.GetComponent<Button>().onClick.AddListener(() =>
             gameObject.GetComponent<TowerManager>().UpgradeTower(upgradeTypes.Item1));
+
+        upgrade2Button.transform.GetComponentInChildren<Text>().text = upgradeTypes.Item2.ToString();
+        upgrade2Button.GetComponent<Button>().onClick.RemoveAllListeners();
         upgrade2Button.GetComponent<Button>().onClick.AddListener(() =>
             gameObject.GetComponent<TowerManager>().UpgradeTower(upgradeTypes.Item2));
     }

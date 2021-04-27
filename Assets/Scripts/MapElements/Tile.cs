@@ -28,11 +28,9 @@ public class Tile : MonoBehaviour
 
 	public void SetSelect(bool isSelected)
 	{
-		if(isSelected) {
+		if(isSelected)
 			gameObject.GetComponent<MeshRenderer>().material = selectedMat;
-		}
-		else {
+		else
 			gameObject.GetComponent<MeshRenderer>().material = unselectedMat;
-		}
 	}
 }

@@ -8,31 +8,46 @@ public class CameraManager : MonoBehaviour
     public GameObject camParent;
 
     // ===== Set at Start() =====
-    private float rotationSpeed;
-    private float mulitplier;
+    private float moveSpeed;
 
     // Start is called before the first frame update
     void Start()
     {
-        rotationSpeed = 0.1f;
-        mulitplier = 2;
+        moveSpeed = 0.05f;
     }
 
     // Update is called once per frame
     void Update()
     {
-        float finalRotationSpeed = rotationSpeed;
-        if(Input.GetKey(KeyCode.LeftShift))
-            finalRotationSpeed *= mulitplier;
-
         if(gameObject.GetComponent<GameManager>().currentMenuState == MenuState.game) {
             // Controls
-            // A - Rotate Camera to the left
-            // D - Rotate Camera to the right
-            if(Input.GetKey(KeyCode.A))
-                camParent.transform.Rotate(0.0f, finalRotationSpeed, 0.0f);
+            //  W                - Pans camera up
+            //  A                - Pans camera to the left
+            //  S                - Pans camera down
+            //  D                - Pans camera to the right
+            //  Scrolling Up     - Zooms the camera in
+            //  Scrolling Down   - Zooms the camera out
+
+            if(Input.GetKey(KeyCode.W))
+                camParent.transform.Translate(0.0f, 0.0f, moveSpeed);
+            else if(Input.GetKey(KeyCode.A))
+                camParent.transform.Translate(-moveSpeed, 0.0f, 0.0f);
+            else if(Input.GetKey(KeyCode.S))
+                camParent.transform.Translate(0.0f, 0.0f, -moveSpeed);
             else if(Input.GetKey(KeyCode.D))
-                camParent.transform.Rotate(0.0f, -finalRotationSpeed, 0.0f);
+                camParent.transform.Translate(moveSpeed, 0.0f, 0.0f);
+
+            if(Input.mouseScrollDelta.y != 0) {
+                Vector3 camForward = camParent.transform.GetChild(0).forward;
+                camParent.transform.position += camForward * Input.mouseScrollDelta.y;
+                while(camParent.transform.position.y < 5.0f
+                    || camParent.transform.position.y > 15.0f) {
+                    if(camParent.transform.position.y < 5.0f)
+                        camParent.transform.position -= camForward * 0.1f;
+                    else if(camParent.transform.position.y > 15.0f)
+                        camParent.transform.position += camForward * 0.1f;
+                }
+            }
         }
     }
 }

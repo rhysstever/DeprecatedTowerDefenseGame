@@ -6,8 +6,8 @@ using UnityEngine;
 public enum TowerTier
 {
 	Basic,
-	Advanced,
-	Expert
+	Advanced
+	// Expert -- to be implemented
 }
 
 public enum TowerType
@@ -35,6 +35,7 @@ public class Tower : MonoBehaviour
 
 	// Set at Start()
 	public GameObject currentEnemy;
+	public bool isUpgradable;
     private float shotTimer;
     
 	// Set on creation
@@ -43,8 +44,9 @@ public class Tower : MonoBehaviour
 	// Start is called before the first frame update
     void Start()
     {
-        shotTimer = attackTime;    // the tower can shoot immediately
 		currentEnemy = null;
+		isUpgradable = Enum.IsDefined(typeof(TowerType), (int)(towerTier + 1));
+		shotTimer = attackTime;    // the tower can shoot immediately
     }
 
     // Update is called once per frame

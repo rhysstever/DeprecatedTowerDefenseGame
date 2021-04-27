@@ -239,10 +239,11 @@ MonoBehaviour:
   towerTier: 0
   towerType: 300
   damage: 2
-  attackTime: 10
+  attackTime: 1
   range: 3
   numOfTargets: 1
   currentEnemy: {fileID: 0}
+  isUpgradable: 0
   tile: {fileID: 0}
 --- !u!114 &93738395701597613
 MonoBehaviour:
