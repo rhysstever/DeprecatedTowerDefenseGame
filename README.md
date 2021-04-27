@@ -14,11 +14,11 @@ Volcano     | Advanced | Fire, Earth  |  #     |  #           | #     | #    | T
 Apocalypse  | Expert   | All          |  #     |  #           | #     | #    | Not created yet
 
 ## Enemies
-Enemy  | Color  | Health | Damage | Move Speed 
--------| ------ | ------ | ------ | ----------
-Normal | Red    | 5      |  5     |  10
-Heavy  | Blue   | 10     |  10    |  5
-Light  | Yellow | 2      |  2     |  20
+Enemy  | Color  | Health | Damage | Move Speed | Worth
+-------| ------ | ------ | ------ | ---------- | -----
+Normal | Red    | 5      | 5      | 10         | 20
+Heavy  | Blue   | 10     | 10     | 5          | 10
+Light  | Yellow | 2      | 2      | 20         | 40
 
 ## Waves
 Wave | Number | Enemy
