@@ -16,9 +16,9 @@ Apocalypse  | Expert   | All          |  #     |  #           | #     | #    | N
 ## Enemies
 Enemy  | Color  | Health | Damage | Move Speed 
 -------| ------ | ------ | ------ | ----------
-Normal | Red    | #      |  #     |  #
-Heavy  | Blue   | #      |  #     |  #
-Light  | Yellow | #      |  #     |  #
+Normal | Red    | 5      |  5     |  10
+Heavy  | Blue   | 10     |  10    |  5
+Light  | Yellow | 2      |  2     |  20
 
 ## Waves
 Wave | Number | Enemy
