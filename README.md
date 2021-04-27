@@ -3,10 +3,10 @@
 ## Towers
 Tower       | Tier     | Type(s)      | Damage | Attack Speed | Range | Cost | Notes
 ----------- | -------- | ------------ | ------ | ------------ | ----- | ---- | -----
-Air         | Basic    | Air          |  1     |  0.5 sec     | 5     | #    | 
-Earth       | Basic    | Earth        |  5     |  2.0 sec     | 2     | #    | Hits all enemies within range
-Fire        | Basic    | Fire         |  2     |  1.0 sec     | 2     | #    | Deals 1 dps for 2 sec
-Water       | Basic    | Water        |  2     |  1.5 sec     | 3     | #    | Slows enemies by 25% for 2 sec
+Air         | Basic    | Air          |  1     |  0.5 sec     | 5     | 60   | 
+Earth       | Basic    | Earth        |  5     |  2.0 sec     | 2     | 100  | Hits all enemies within range
+Fire        | Basic    | Fire         |  2     |  1.0 sec     | 2     | 120  | Deals 1 dps for 2 sec
+Water       | Basic    | Water        |  2     |  1.5 sec     | 3     | 80   | Slows enemies by 25% for 2 sec
 Lightning   | Advanced | Air, Fire    |  #     |  #           | #     | #    | To be designed
 Ice         | Advanced | Water, Air   |  #     |  #           | #     | #    | To be designed
 Quicksand   | Advanced | Earth, Water |  #     |  #           | #     | #    | To be designed
@@ -14,11 +14,11 @@ Volcano     | Advanced | Fire, Earth  |  #     |  #           | #     | #    | T
 Apocalypse  | Expert   | All          |  #     |  #           | #     | #    | Not created yet
 
 ## Enemies
-Enemy  | Color  | Health | Damage | Move Speed 
--------| ------ | ------ | ------ | ----------
-Normal | Red    | 5      |  5     |  10
-Heavy  | Blue   | 10     |  10    |  5
-Light  | Yellow | 2      |  2     |  20
+Enemy  | Color  | Health | Damage | Worth | Move Speed
+-------| ------ | ------ | ------ | ----- | ----------
+Normal | Red    | 5      | 5      | 20    | 10
+Heavy  | Blue   | 10     | 10     | 10    | 5
+Light  | Yellow | 2      | 2      | 40    | 20
 
 ## Waves
 Wave | Number | Enemy
