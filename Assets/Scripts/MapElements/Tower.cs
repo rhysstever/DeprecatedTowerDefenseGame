@@ -28,6 +28,7 @@ public class Tower : MonoBehaviour
     // Set in inspector
     public TowerTier towerTier;
     public TowerType towerType;
+	public int cost;
     public float damage;
     public float attackTime;
     public float range;
@@ -36,7 +37,7 @@ public class Tower : MonoBehaviour
 	// Set at Start()
 	public GameObject currentEnemy;
 	public bool isUpgradable;
-    private float shotTimer;
+    public float shotTimer;
     
 	// Set on creation
 	public GameObject tile;
@@ -52,56 +53,49 @@ public class Tower : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		TargetEnemy();
 		RotateToCurrentEnemy();
     }
 
 	void FixedUpdate()
 	{
+		shotTimer += Time.deltaTime;
+	}
+
+	/// <summary>
+	/// Determines whether it can fire on an enemy
+	/// </summary>
+	/// <returns>Returns true if the tower has a targeted enemy and its timer is high enough</returns>
+	public bool CanShoot()
+	{
 		if(currentEnemy != null
 			&& shotTimer >= attackTime)
-			Shoot(currentEnemy);
-		else
-			shotTimer += Time.deltaTime;
+			return true;
+
+		return false;
 	}
 
 	/// <summary>
-	/// Loops through all enemies in the scene, finding any within range
+	/// Deals damage to the current enemy
 	/// </summary>
-	void TargetEnemy()
-	{
-		currentEnemy = null;
-		GameObject enemies = GameObject.Find("enemies");
-		for(int child = enemies.transform.childCount - 1; child >= 0; child--) {
-			if(Vector3.Distance(gameObject.transform.position,
-				enemies.transform.GetChild(child).position) <= range)
-				currentEnemy = enemies.transform.GetChild(child).gameObject;
-		}
-	}
-
-	/// <summary>
-	/// Deals damage to a targeted enemy
-	/// </summary>
-	/// <param name="enemy">The enemy to be shot</param>
-    void Shoot(GameObject enemy)
+    public void DealDamage()
 	{
 		// Checks that the enemy is not null and is actually an enemy
-		if(enemy == null
-			|| enemy.GetComponent<Enemy>() == null) {
+		if(currentEnemy == null
+			|| currentEnemy.GetComponent<Enemy>() == null) {
 			Debug.Log("This is not an enemy!");
 			return;
 		}
 
 		// Deals damage to enemy, applys the attack modifier's affliction to the enemy
-		enemy.GetComponent<Enemy>().TakeDamage(damage);
+		currentEnemy.GetComponent<Enemy>().TakeDamage(damage);
 		if(gameObject.GetComponent<Affliction>() != null) {
 			Type type = Type.GetType("Affliction");
-			enemy.AddComponent(type);
-			enemy.GetComponent<Affliction>().type = gameObject.GetComponent<Affliction>().type;
-			enemy.GetComponent<Affliction>().totalDuration = gameObject.GetComponent<Affliction>().totalDuration;
-			enemy.GetComponent<Affliction>().currentTime = gameObject.GetComponent<Affliction>().totalDuration;
-			enemy.GetComponent<Affliction>().tickFrequency = gameObject.GetComponent<Affliction>().tickFrequency;
-			enemy.GetComponent<Affliction>().amount = gameObject.GetComponent<Affliction>().amount;
+			currentEnemy.AddComponent(type);
+			currentEnemy.GetComponent<Affliction>().type = gameObject.GetComponent<Affliction>().type;
+			currentEnemy.GetComponent<Affliction>().totalDuration = gameObject.GetComponent<Affliction>().totalDuration;
+			currentEnemy.GetComponent<Affliction>().currentTime = gameObject.GetComponent<Affliction>().totalDuration;
+			currentEnemy.GetComponent<Affliction>().tickFrequency = gameObject.GetComponent<Affliction>().tickFrequency;
+			currentEnemy.GetComponent<Affliction>().amount = gameObject.GetComponent<Affliction>().amount;
 		}
 
 		// Reset timer

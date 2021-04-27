@@ -12,8 +12,12 @@ public enum MenuState
 
 public class GameManager : MonoBehaviour
 {
-    public MenuState currentMenuState;
+    // ===== Set in inspector =====
     public int health;
+    public int money;
+
+    // ===== Set at Start() =====
+    public MenuState currentMenuState;
 
     // Start is called before the first frame update
     void Start()
@@ -62,13 +66,4 @@ public class GameManager : MonoBehaviour
                 break;
         }
 	}
-
-    /// <summary>
-	/// Deals damage to the player
-	/// </summary>
-	/// <param name="damage">The damage the player is taking</param>
-	public void TakeDamage(int damage)
-    {
-        health -= damage;
-    }
 }

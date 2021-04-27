@@ -38,6 +38,11 @@ public class TowerManager : MonoBehaviour
 			if(currentSelectedGameObject != null
 				&& currentSelectedGameObject.GetComponent<Tower>() != null)
 				gameObject.GetComponent<UIManager>().UpdateTowerUpgradeButtons(FindEligibleUpgradeTypes(currentSelectedGameObject));
+
+			// Updating Towers
+			TargetEnemies();
+			ShootEnemies();
+			UpdateBullets();
 		}
 	}
 
@@ -69,7 +74,8 @@ public class TowerManager : MonoBehaviour
 			// if it is a tile with a tower built on it, the tower is selected
 			GameObject selectableGameObj = FindSelectableGameObject(rayHit.transform.gameObject);
 			currentSelectedGameObject = selectableGameObj;
-			if(selectableGameObj.tag == "Tile"
+			if(selectableGameObj != null
+				&& selectableGameObj.tag == "Tile"
 				&& selectableGameObj.GetComponent<Tile>().tower != null)
 				currentSelectedGameObject = selectableGameObj.GetComponent<Tile>().tower;
 
@@ -160,6 +166,16 @@ public class TowerManager : MonoBehaviour
 				return;
 			}
 
+			// Checks if the player has enough money to buy the tower, 
+			// if so, the amount is deducted; otherwise, the tower is not built
+			if(gameObject.GetComponent<GameManager>().money 
+				>= towerPrefab.GetComponent<Tower>().cost)
+				gameObject.GetComponent<GameManager>().money -= towerPrefab.GetComponent<Tower>().cost;
+			else {
+				Debug.Log("Not enough money to build tower!");
+				return;
+			}
+
 			// Calculates the to be new tower's position based on the tile is being built on
 			Vector3 towerPos = currentSelectedGameObject.transform.position;
 			towerPos.y += towerPrefab.transform.Find("base").gameObject.GetComponent<BoxCollider>().size.y / 2;
@@ -206,6 +222,19 @@ public class TowerManager : MonoBehaviour
 	}
 
 	/// <summary>
+	/// Removes the tower from the game
+	/// </summary>
+	public void SellTower()
+	{
+		// Unhighlight the tower's tile, destory the tower,
+		// and set the selected gameObject to null
+		HighlightTile(currentSelectedGameObject, false);
+		gameObject.GetComponent<GameManager>().money += currentSelectedGameObject.GetComponent<Tower>().cost / 2;
+		Destroy(currentSelectedGameObject);
+		currentSelectedGameObject = null;
+	}
+
+	/// <summary>
 	/// Finds the other 2 elements that can be used to upgrade the current tower
 	/// </summary>
 	/// <param name="tower">The currently selected tower that can be upgraded</param>
@@ -242,5 +271,83 @@ public class TowerManager : MonoBehaviour
 		}
 
 		return types;
+	}
+
+	/// <summary>
+	/// Loops through towers and enemies, targeting an enemy for each tower, if able
+	/// </summary>
+	void TargetEnemies()
+	{
+		GameObject enemies = gameObject.GetComponent<EnemyManager>().enemies;
+		foreach(Transform towerTransform in towers.transform) { 
+			foreach(Transform enemyTransform in enemies.transform) {
+				// Finds the enemy that is closest to the tower
+				// ===== TO FIX ===== change to be farthest enemy along the map
+				if(Vector3.Distance(towerTransform.position,
+				enemyTransform.position) <= towerTransform.gameObject.GetComponent<Tower>().range)
+					towerTransform.gameObject.GetComponent<Tower>().currentEnemy = enemyTransform.gameObject;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Loops through each tower, if it can shoot, it will fire a bullet at the enemy
+	/// </summary>
+	void ShootEnemies()
+	{
+		foreach(Transform towerTransform in towers.transform) { 
+			GameObject tower = towerTransform.gameObject;
+			if(tower.GetComponent<Tower>().CanShoot()) {
+				// Reset shot timer
+				tower.GetComponent<Tower>().shotTimer = 0.0f;
+				// Spawn a bullet at the tower to target the current enemy
+				Vector3 bulletPos = tower.transform.position;
+				GameObject newBullet = Instantiate(
+					bulletPrefab,
+					bulletPos,
+					Quaternion.identity,
+					bullets.transform);
+				newBullet.GetComponent<Bullet>().target = tower.GetComponent<Tower>().currentEnemy;
+				newBullet.GetComponent<Bullet>().parentTower = tower;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Moves bullets towards their targets, dealing damage if they hit
+	/// </summary>
+	void UpdateBullets()
+	{
+		List<GameObject> destroyedBullets = new List<GameObject>();
+		foreach(Transform bulletTransform in bullets.transform) { 
+			GameObject bullet = bulletTransform.gameObject;
+			// If the bullet's target dies or the tower is sold
+			// before it reaches its target, the bullet is added to a list to be destroyed later
+			if(bullet.GetComponent<Bullet>().target == null
+				|| bullet.GetComponent<Bullet>().parentTower == null) {
+				destroyedBullets.Add(bullet);
+				continue;
+			}
+
+			// If the bullet hits the enemy, the tower deals damage to the enemy
+			// and the bullet is added to a list to be destroyed later
+			if(Vector3.Distance(bullet.transform.position, 
+				bullet.GetComponent<Bullet>().target.transform.position) <= 0.5f) {
+				bullet.GetComponent<Bullet>().parentTower.GetComponent<Tower>().DealDamage();
+				destroyedBullets.Add(bullet);
+			}  // If the bullet is not close enough to the enemy, it is moved closer
+			else {
+				Vector3 vectorToEnemy = (bullet.GetComponent<Bullet>().target.transform.position 
+					- bullet.transform.position).normalized;
+				bullet.transform.position += (vectorToEnemy 
+					* bullet.GetComponent<Bullet>().projectileSpeed
+					* Time.deltaTime);
+			}
+		}
+
+		// At the end, loops through and destroys each bullet in the list
+		foreach(GameObject bullet in destroyedBullets) {
+			Destroy(bullet);
+		}
 	}
 }

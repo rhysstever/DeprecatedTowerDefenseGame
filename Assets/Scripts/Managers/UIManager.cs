@@ -49,6 +49,9 @@ public class UIManager : MonoBehaviour
     TextMeshProUGUI healthText;
 
     [SerializeField]
+    TextMeshProUGUI moneyText;
+
+    [SerializeField]
     GameObject startWaveButton;
 
     [SerializeField]
@@ -82,7 +85,10 @@ public class UIManager : MonoBehaviour
     GameObject buildWaterTowerButton;
 
     [SerializeField]
-    GameObject upgradeTowerButtonsParent;
+    GameObject towerButtonsParent;
+
+    [SerializeField]
+    GameObject sellTowerButton;
 
     [SerializeField]
     GameObject upgrade1Button;
@@ -122,6 +128,8 @@ public class UIManager : MonoBehaviour
             gameObject.GetComponent<TowerManager>().BuildTower(TowerType.Fire));
         buildWaterTowerButton.GetComponent<Button>().onClick.AddListener(() =>
             gameObject.GetComponent<TowerManager>().BuildTower(TowerType.Water));
+        sellTowerButton.GetComponent<Button>().onClick.AddListener(() =>
+            gameObject.GetComponent<TowerManager>().SellTower());
 
         // GameOver Elements
         backToMainMenuButton.GetComponent<Button>().onClick.AddListener(() =>
@@ -144,11 +152,12 @@ public class UIManager : MonoBehaviour
                 selectedMapParent.SetActive(gameObject.GetComponent<LevelManager>().selectedMapIndex >= 0);
                 break;
             case MenuState.game:
+                healthText.text = "Health: " + gameObject.GetComponent<GameManager>().health;
+                moneyText.text = "Cash: " + gameObject.GetComponent<GameManager>().money;
                 // Updates current wave text
                 waveText.text = gameObject.GetComponent<EnemyManager>().currentWave.Description();
                 enemyCounter.text = gameObject.GetComponent<EnemyManager>().currentWave.EnemiesLeft + " / "
                     + gameObject.GetComponent<EnemyManager>().currentWave.EnemyCount + " enemies left";
-                healthText.text = "Health: " + gameObject.GetComponent<GameManager>().health;
                 
                 // Updates selected object text
                 // If the selected gameObject exists, and is a tower, then its name is displayed
@@ -159,13 +168,13 @@ public class UIManager : MonoBehaviour
                     selectedObjectName.text = "";
                     selectedObjectDescription.text = "";
                     buildTowerButtonsParent.SetActive(false);
-                    upgradeTowerButtonsParent.SetActive(false);
+                    towerButtonsParent.SetActive(false);
                 } // If the selected gameObject is a tile, no text displays but build buttons appear
                 else if(selectedGO.GetComponent<Tile>() != null) {
                     selectedObjectName.text = "";
                     selectedObjectDescription.text = "";
                     buildTowerButtonsParent.SetActive(true);
-                    upgradeTowerButtonsParent.SetActive(false);
+                    towerButtonsParent.SetActive(false);
                 } // If the selected gameObject is a tower, it displays its stats
                 else if(selectedGO.GetComponent<Tower>() != null) {
                     selectedObjectName.text = selectedGO.name;
@@ -175,7 +184,7 @@ public class UIManager : MonoBehaviour
                         + "\nRange: " + selectedGO.GetComponent<Tower>().range;
                     buildTowerButtonsParent.SetActive(false);
                     // only shows the upgrade buttons if the tower can be upgraded
-                    upgradeTowerButtonsParent.SetActive(selectedGO.GetComponent<Tower>().isUpgradable);
+                    towerButtonsParent.SetActive(selectedGO.GetComponent<Tower>().isUpgradable);
                 }
                 break;
         }

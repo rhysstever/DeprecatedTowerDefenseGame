@@ -10,7 +10,7 @@ public class EnemyManager : MonoBehaviour
 
     // ===== Set at Start() =====
     public Wave currentWave;
-    private GameObject enemies;
+    public GameObject enemies;
     private float spawnTimer;
     
     // Start is called before the first frame update
@@ -108,36 +108,27 @@ public class EnemyManager : MonoBehaviour
     /// </summary>
     void CheckEnemies()
 	{
-        List<GameObject> children = new List<GameObject>();
+        List<GameObject> destroyedEnemies = new List<GameObject>();
         Vector3 exitPos = gameObject.GetComponent<LevelManager>().level.transform.Find("checkpoints").transform.Find("exit").position;
 
-        foreach(Transform child in enemies.transform) {
-            children.Add(child.gameObject);
-		}
-
 		// Loops through each enemy child, checking if they need to be removed
-        for(int childIndex = 0; childIndex < children.Count; childIndex++) {
-			GameObject enemy = children[childIndex];
+        foreach(Transform enemyTransform in enemies.transform) {
+			GameObject enemy = enemyTransform.gameObject;
 			// If the enemy has no health
 			if(enemy.GetComponent<Enemy>().health <= 0.0f) {
-				RemoveEnemy(enemy);
+                gameObject.GetComponent<GameManager>().money += enemy.GetComponent<Enemy>().worth;
+                destroyedEnemies.Add(enemy);
 			}
 			// If the enemy has reached the exit
 			else if(Vector3.Distance(enemy.transform.position, exitPos) <= 0.5f) {
-				RemoveEnemy(enemy);
-				gameObject.GetComponent<GameManager>().TakeDamage(enemy.GetComponent<Enemy>().damage);
-			}
+				gameObject.GetComponent<GameManager>().health -= enemy.GetComponent<Enemy>().damage;
+                destroyedEnemies.Add(enemy);
+            }
 		}
-	}
 
-    /// <summary>
-    /// Removes the given enemy from the current wave and scene
-    /// </summary>
-    /// <param name="enemy">The enemy being removed</param>
-	void RemoveEnemy(GameObject enemy)
-	{
-		enemy.SetActive(false);
-		currentWave.EnemyRemoved();
-        Destroy(enemy);
+        // At the end, loops through and destroys each enemy in the list
+        foreach(GameObject enemy in destroyedEnemies) {
+            Destroy(enemy);
+        }
     }
 }

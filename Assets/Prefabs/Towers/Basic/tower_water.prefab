@@ -238,11 +238,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   towerTier: 0
   towerType: 4000
+  cost: 80
   damage: 2
   attackTime: 1.5
   range: 4
   numOfTargets: 1
   currentEnemy: {fileID: 0}
+  isUpgradable: 0
+  shotTimer: 0
   tile: {fileID: 0}
 --- !u!114 &1196638503723886300
 MonoBehaviour:
@@ -259,4 +262,5 @@ MonoBehaviour:
   type: 0
   totalDuration: 3
   currentTime: 3
+  tickFrequency: 0
   amount: 50

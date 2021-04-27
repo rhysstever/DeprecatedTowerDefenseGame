@@ -8,6 +8,7 @@ public class Enemy : MonoBehaviour
     public string enemyName;
     public float health;
 	public int damage;
+    public int worth;
     public float moveSpeed;
     public float currentMoveSpeed;
 

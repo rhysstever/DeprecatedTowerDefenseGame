@@ -9,6 +9,7 @@ public class Bullet : MonoBehaviour
 
     // ===== Set on creation =====
     public GameObject target;
+    public GameObject parentTower;
     
     // Start is called before the first frame update
     void Start()

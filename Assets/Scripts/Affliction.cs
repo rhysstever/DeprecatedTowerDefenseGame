@@ -5,7 +5,7 @@ using UnityEngine;
 public enum AfflictionType
 {
     Slow,
-    Dot,
+    DamageOverTime,
     Stun
 }
 
@@ -42,7 +42,7 @@ public class Affliction : MonoBehaviour
             case AfflictionType.Slow:
                 gameObject.GetComponent<Enemy>().currentMoveSpeed *= (1 - (amount / 100));
                 break;
-            case AfflictionType.Dot:
+            case AfflictionType.DamageOverTime:
                 if(currentTime < totalDuration
                     && (int)(currentTime * 1000) % tickFrequency == 0)
                     gameObject.GetComponent<Enemy>().TakeDamage(amount);

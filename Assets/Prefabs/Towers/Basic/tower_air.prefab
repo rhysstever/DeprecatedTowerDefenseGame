@@ -237,9 +237,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   towerTier: 0
   towerType: 1
+  cost: 60
   damage: 1
   attackTime: 0.5
   range: 5
   numOfTargets: 1
   currentEnemy: {fileID: 0}
+  isUpgradable: 0
+  shotTimer: 0
   tile: {fileID: 0}

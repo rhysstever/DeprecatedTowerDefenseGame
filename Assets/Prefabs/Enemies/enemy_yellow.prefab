@@ -238,6 +238,7 @@ MonoBehaviour:
   enemyName: Speedy
   health: 2
   damage: 2
+  worth: 10
   moveSpeed: 20
   currentMoveSpeed: 20
   currentCheckpoint: {fileID: 0}
