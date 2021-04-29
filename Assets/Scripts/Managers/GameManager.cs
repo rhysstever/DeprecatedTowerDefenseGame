@@ -7,6 +7,7 @@ public enum MenuState
     mainMenu,
     levelSelect,
     game,
+    pause,
     gameOver
 }
 
@@ -35,9 +36,17 @@ public class GameManager : MonoBehaviour
             case MenuState.levelSelect:
                 break;
             case MenuState.game:
+                // ESC key pauses the game
+                if(Input.GetKeyDown(KeyCode.Escape))
+                    ChangeMenuState(MenuState.pause);
                 // Changes the menu state to Game Over if the player loses all health
                 if(health <= 0)
-                    gameObject.GetComponent<GameManager>().ChangeMenuState(MenuState.gameOver);
+                    ChangeMenuState(MenuState.gameOver);
+                break;
+            case MenuState.pause:
+                // ESC key unpauses the game
+                if(Input.GetKeyDown(KeyCode.Escape))
+                    ChangeMenuState(MenuState.game);
                 break;
             case MenuState.gameOver:
                 break;
@@ -59,6 +68,8 @@ public class GameManager : MonoBehaviour
             case MenuState.levelSelect:
                 break;
             case MenuState.game:
+                break;
+            case MenuState.pause:
                 break;
             case MenuState.gameOver:
                 break;

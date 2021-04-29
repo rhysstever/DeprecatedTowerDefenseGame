@@ -89,6 +89,16 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     GameObject upgrade2Button;
 
+    // Pause UI Elements
+    [SerializeField]
+    GameObject pauseParentObj;
+
+    [SerializeField]
+    GameObject resumeGameButton;
+
+    [SerializeField]
+    GameObject quitGameButtonPause;
+
     // GameOver UI Elements
     [SerializeField]
     GameObject gameOverParentObj;
@@ -131,6 +141,11 @@ public class UIManager : MonoBehaviour
         sellTowerButton.GetComponent<Button>().onClick.AddListener(() =>
             gameObject.GetComponent<TowerManager>().SellTower());
 
+        // Pause Elements
+        resumeGameButton.GetComponent<Button>().onClick.AddListener(() => 
+            gameObject.GetComponent<GameManager>().ChangeMenuState(MenuState.game));
+        quitGameButtonPause.GetComponent<Button>().onClick.AddListener(() => Application.Quit());
+
         // GameOver Elements
         backToMainMenuButton.GetComponent<Button>().onClick.AddListener(() =>
             gameObject.GetComponent<GameManager>().ChangeMenuState(MenuState.mainMenu));
@@ -141,6 +156,7 @@ public class UIManager : MonoBehaviour
         parentObjs.Add(mainMenuParentObj);
         parentObjs.Add(levelSelectParentObj);
         parentObjs.Add(gameParentObj);
+        parentObjs.Add(pauseParentObj);
         parentObjs.Add(gameOverParentObj);
     }
 
@@ -207,6 +223,8 @@ public class UIManager : MonoBehaviour
                     towerButtonsParent.SetActive(selectedGO.GetComponent<Tower>().isUpgradable);
                 }
                 break;
+            case MenuState.pause:
+                break;
             case MenuState.gameOver:
                 break;
         }
@@ -219,32 +237,29 @@ public class UIManager : MonoBehaviour
     public void ActivateUI(MenuState menuState)
 	{
         for(int i = 0; i < parentObjs.Count; i++) {
+            parentObjs[i].SetActive(false);
             switch(menuState) {
                 case MenuState.mainMenu:
                     if(parentObjs[i] == mainMenuParentObj)
                         parentObjs[i].SetActive(true);
-                    else
-                        parentObjs[i].SetActive(false);
                     break;
                 case MenuState.levelSelect:
                     if(parentObjs[i] == levelSelectParentObj)
                         parentObjs[i].SetActive(true);
-                    else
-                        parentObjs[i].SetActive(false);
                     // Auto select the first map
                     SelectMap(0);
                     break;
                 case MenuState.game:
                     if(parentObjs[i] == gameParentObj)
                         parentObjs[i].SetActive(true);
-                    else
-                        parentObjs[i].SetActive(false);
+                    break;
+                case MenuState.pause:
+                    if(parentObjs[i] == pauseParentObj)
+                        parentObjs[i].SetActive(true);
                     break;
                 case MenuState.gameOver:
                     if(parentObjs[i] == gameOverParentObj)
                         parentObjs[i].SetActive(true);
-                    else
-                        parentObjs[i].SetActive(false);
                     // Edit game over header to reflect if the player won or lost
                     // The player wins if they complete all waves and have health remaining
                     if(gameObject.GetComponent<GameManager>().health > 0)
