@@ -38,6 +38,7 @@ public class Tower : MonoBehaviour
 	public GameObject targetedEnemy;
 	public bool isUpgradable;
     public float shotTimer;
+	private Affliction attackModifier;
     
 	// Set on creation
 	public GameObject tile;
@@ -48,7 +49,9 @@ public class Tower : MonoBehaviour
 		targetedEnemy = null;
 		isUpgradable = Enum.IsDefined(typeof(TowerType), (int)(towerTier + 1));
 		shotTimer = attackTime;    // the tower can shoot immediately
-    }
+
+		ConvertAttackMod();
+	}
 
     // Update is called once per frame
     void Update()
@@ -74,6 +77,37 @@ public class Tower : MonoBehaviour
 		return false;
 	}
 
+	void ConvertAttackMod()
+	{
+		AttackModifier modifier = gameObject.GetComponent<AttackModifier>();
+		if(modifier == null)
+			return;
+
+		switch(modifier.modifierType) {
+			case Modifier.DamageOverTime:
+				attackModifier = new DamageOverTime(
+					modifier.modifierName,
+					modifier.modifierType,
+					modifier.totalDuration,
+					modifier.amount,
+					modifier.procFrequency);
+				break;
+			case Modifier.Slow:
+				attackModifier = new Slow(
+					modifier.modifierName,
+					modifier.modifierType,
+					modifier.totalDuration,
+					modifier.amount);
+				break;
+			case Modifier.Stun:
+				attackModifier = new Affliction(
+					modifier.modifierName,
+					modifier.modifierType,
+					modifier.totalDuration);
+				break;
+		}
+	}
+
 	/// <summary>
 	/// Deals damage to the current enemy
 	/// </summary>
@@ -81,15 +115,11 @@ public class Tower : MonoBehaviour
 	{
 		// Deals damage to the targeted enemy
 		enemy.GetComponent<Enemy>().TakeDamage(damage);
-		// Applies the tower's affliction to the enemy if it has one
-		if(gameObject.GetComponent<Affliction>() != null) {
-			Type type = Type.GetType("Affliction");
-			enemy.AddComponent(type);
-			enemy.GetComponent<Affliction>().type = gameObject.GetComponent<Affliction>().type;
-			enemy.GetComponent<Affliction>().totalDuration = gameObject.GetComponent<Affliction>().totalDuration;
-			enemy.GetComponent<Affliction>().currentTime = gameObject.GetComponent<Affliction>().totalDuration;
-			enemy.GetComponent<Affliction>().tickFrequency = gameObject.GetComponent<Affliction>().tickFrequency;
-			enemy.GetComponent<Affliction>().amount = gameObject.GetComponent<Affliction>().amount;
+		// If the tower has one, the tower's attack modifier
+		// is applied as an afflictionto the enemy
+		if(attackModifier != null) {
+			if(!enemy.GetComponent<Enemy>().activeAfflictions.ContainsKey(attackModifier.afflictionName))
+				enemy.GetComponent<Enemy>().activeAfflictions.Add(attackModifier.afflictionName, attackModifier);
 		}
 
 		// Reset timer

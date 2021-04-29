@@ -18,12 +18,14 @@ public class Enemy : MonoBehaviour
 
     // ===== Set at Start() ===== 
     public float distanceToNextCP;
+	public Dictionary<string, Affliction> activeAfflictions;
     private bool canMove;
     
     // Start is called before the first frame update
     void Start()
     {
         distanceToNextCP = Math.Abs(Vector3.Distance(gameObject.transform.position, currentCheckpoint.transform.position));
+        activeAfflictions = new Dictionary<string, Affliction>();
         canMove = true;
         RotateToNextCP();
     }
@@ -33,9 +35,6 @@ public class Enemy : MonoBehaviour
     {
         // Sets the current move speed to its initial speed
         currentMoveSpeed = moveSpeed;
-
-        if(gameObject.GetComponents<Affliction>().Length > 0)
-            ProcessAfflictions(gameObject.GetComponents<Affliction>());
 
         distanceToNextCP = Math.Abs(Vector3.Distance(gameObject.transform.position, currentCheckpoint.transform.position));
 
@@ -103,14 +102,22 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(float damage) { health -= damage; }
 
     /// <summary>
-    /// Removes any active afflictions, if they have expired
+    /// Removes any afflictions if they have expired
     /// </summary>
-    /// <param name="afflictions">The list of active afflictions on the enemy</param>
-    void ProcessAfflictions(Affliction[] afflictions)
+    public void ProcessAfflictions()
 	{
-        for(int a = 0; a < afflictions.Length; a++) {
-            if(afflictions[a].currentTime <= 0.0f)
-                Destroy(afflictions[a]);
-		}
-	}
+        // Check if any afflictions have expired, 
+        // otherwise, process the affliction's effect
+        List<string> deadAfflictionNames = new List<string>();
+        foreach(string afflictionName in activeAfflictions.Keys) {
+            if(activeAfflictions[afflictionName].currentTime <= 0.0f)
+                deadAfflictionNames.Add(afflictionName);
+            else
+                activeAfflictions[afflictionName].ProcessAffliction(gameObject);
+        }
+
+        foreach(string deadAfflictionName in deadAfflictionNames) {
+            activeAfflictions.Remove(deadAfflictionName);
+        }
+    }
 }

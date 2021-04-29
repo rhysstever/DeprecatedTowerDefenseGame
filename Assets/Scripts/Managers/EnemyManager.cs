@@ -6,7 +6,7 @@ public class EnemyManager : MonoBehaviour
 {
     // ===== Set in inspector =====
     // Enemy Prefabs
-    public GameObject redEnemyPrefab, blueEnemyPrefab, yellowEnemyPrefab;
+    public GameObject normalEnemyPrefab, tankyEnemyPrefab, speedyEnemyPrefab;
 
     // ===== Set at Start() =====
     public Wave currentWave;
@@ -80,12 +80,12 @@ public class EnemyManager : MonoBehaviour
     /// <returns>The first wave</returns>
     Wave CreateWaves()
     {
-        Wave wave6 = new Wave("Wave 6", blueEnemyPrefab,    4, 1.0f);
-        Wave wave5 = new Wave("Wave 5", yellowEnemyPrefab,  6, 0.5f, wave6);
-        Wave wave4 = new Wave("Wave 4", redEnemyPrefab,     4, 0.5f, wave5);
-        Wave wave3 = new Wave("Wave 3", yellowEnemyPrefab,  4, 0.5f, wave4);
-		Wave wave2 = new Wave("Wave 2", blueEnemyPrefab,    2, 1.0f, wave3);
-        Wave wave1 = new Wave("Wave 1", redEnemyPrefab,     3, 0.5f, wave2);
+        Wave wave6 = new Wave("Wave 6", tankyEnemyPrefab,    4, 1.0f);
+        Wave wave5 = new Wave("Wave 5", speedyEnemyPrefab,  6, 0.5f, wave6);
+        Wave wave4 = new Wave("Wave 4", normalEnemyPrefab,     4, 0.5f, wave5);
+        Wave wave3 = new Wave("Wave 3", speedyEnemyPrefab,  4, 0.5f, wave4);
+		Wave wave2 = new Wave("Wave 2", tankyEnemyPrefab,    2, 1.0f, wave3);
+        Wave wave1 = new Wave("Wave 1", normalEnemyPrefab,     3, 0.5f, wave2);
 
         return wave1;
     }
@@ -116,7 +116,11 @@ public class EnemyManager : MonoBehaviour
 	{
 		foreach(Transform enemyTransform in enemies.transform) {
             enemyTransform.gameObject.GetComponent<Enemy>().Move();
-		}
+
+            if(enemyTransform.gameObject.GetComponent<Enemy>().activeAfflictions != null
+                && enemyTransform.gameObject.GetComponent<Enemy>().activeAfflictions.Count > 0)
+                enemyTransform.gameObject.GetComponent<Enemy>().ProcessAfflictions();
+        }
 	}
 
 	/// <summary>

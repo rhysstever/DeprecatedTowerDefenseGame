@@ -201,7 +201,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8910245781635599046}
   - component: {fileID: -4507115723785744690}
-  - component: {fileID: 1196638503723886300}
+  - component: {fileID: 5691931454098474626}
   m_Layer: 0
   m_Name: tower_water
   m_TagString: Tower
@@ -243,11 +243,11 @@ MonoBehaviour:
   attackTime: 1.5
   range: 4
   numOfTargets: 1
-  currentEnemy: {fileID: 0}
+  targetedEnemy: {fileID: 0}
   isUpgradable: 0
   shotTimer: 0
   tile: {fileID: 0}
---- !u!114 &1196638503723886300
+--- !u!114 &5691931454098474626
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -256,11 +256,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8910245781635599045}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35be9325f6c94824aab5827bd29b061e, type: 3}
+  m_Script: {fileID: 11500000, guid: e1b3b5cb95c619448b01d10086490013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
-  totalDuration: 3
-  currentTime: 3
-  tickFrequency: 0
-  amount: 50
+  modifierName: Gush
+  modifierType: 0
+  totalDuration: 2
+  amount: 25
+  procFrequency: 1

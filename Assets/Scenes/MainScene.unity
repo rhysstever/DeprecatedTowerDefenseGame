@@ -3756,9 +3756,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c772c8fef2beb64ba6999ecef158e86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  redEnemyPrefab: {fileID: 8242119779928304451, guid: c13b9445f1b4c5a43bfbab684f450799, type: 3}
-  blueEnemyPrefab: {fileID: 8242119779928304451, guid: d83ffa00b87487d44bf4f2cf4f4c5394, type: 3}
-  yellowEnemyPrefab: {fileID: 8242119779928304451, guid: 2831a2de278c87440894afe541e97cee, type: 3}
+  normalEnemyPrefab: {fileID: 8242119779928304451, guid: c13b9445f1b4c5a43bfbab684f450799, type: 3}
+  tankyEnemyPrefab: {fileID: 8242119779928304451, guid: d83ffa00b87487d44bf4f2cf4f4c5394, type: 3}
+  speedyEnemyPrefab: {fileID: 8242119779928304451, guid: 2831a2de278c87440894afe541e97cee, type: 3}
   enemies: {fileID: 0}
 --- !u!4 &1494799151
 Transform:
@@ -3815,7 +3815,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  money: 200
+  money: 2000
   currentMenuState: 0
 --- !u!114 &1494799154
 MonoBehaviour:
