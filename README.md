@@ -2,7 +2,10 @@
 A game built in Unity where the player must buy towers to defend their base. The player can also upgrade towers to strengthen their defense. 
 
 ## How to Play
-In the [Versions](Versions) folder, download the newest version and unzip it. Run the .exe (Note: do not run "UnityCrashHandler64.exe", run the other .exe)
+1. Go to the [Versions](Versions) folder
+2. Download the newest version
+3. Unzip it
+4. Run the .exe (Note: do not run "UnityCrashHandler64.exe", run the other .exe)
 
 ## Game Info
 ### Towers
