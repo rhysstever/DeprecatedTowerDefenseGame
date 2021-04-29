@@ -1,5 +1,5 @@
 # TowerDefenseGame
-A game built in Unity where the player must buy towers to defend their base. The player can also upgrade towers to strengthen their defense. 
+A game built in Unity where the player must build towers to defend their base. Tower have different elements and can be combined to become stronger.
 
 ## How to Play
 1. Go to the [Versions](Versions) folder
