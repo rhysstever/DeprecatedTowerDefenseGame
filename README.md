@@ -1,7 +1,7 @@
 # TowerDefenseGame
 A game built in Unity where the player must build towers to defend their base. Tower have different elements and can be combined to become stronger.
 
-## How to Play
+## How to Run
 1. Go to the [Versions](Versions) folder
 2. Download the newest version
 3. Unzip it
