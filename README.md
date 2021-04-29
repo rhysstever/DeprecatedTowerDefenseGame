@@ -1,7 +1,7 @@
 # TowerDefenseGame
 A game built in Unity where the player must build towers to defend their base. Tower have different elements and can be combined to become stronger.
 
-## How to Play
+## How to Run
 1. Go to the [Versions](Versions) folder
 2. Download the newest version
 3. Unzip it
@@ -9,17 +9,19 @@ A game built in Unity where the player must build towers to defend their base. T
 
 ## Game Info
 ### Towers
-Tower       | Tier     | Type(s)      | Damage | Attack Speed | Range | Cost | Notes
------------ | -------- | ------------ | ------ | ------------ | ----- | ---- | -----
-Air         | Basic    | Air          | 1      | 0.5 sec      | 5     | 60   | 
-Earth       | Basic    | Earth        | 5      | 2.0 sec      | 2     | 100  | Hits all enemies within range
-Fire        | Basic    | Fire         | 2      | 1.0 sec      | 3     | 120  | Deals 1 dps for 2 sec
-Water       | Basic    | Water        | 2      | 1.5 sec      | 4     | 80   | Slows enemies by 25% for 2 sec
-Lightning   | Advanced | Air, Fire    | #      | #            | #     | #    | To be designed
-Ice         | Advanced | Water, Air   | #      | #            | #     | #    | To be designed
-Quicksand   | Advanced | Earth, Water | #      | #            | #     | #    | To be designed
-Volcano     | Advanced | Fire, Earth  | #      | #            | #     | #    | To be designed
-Apocalypse  | Expert   | All          | #      | #            | #     | #    | Not created yet
+Tower       | Tier     | Type(s)      | Cost | Damage | Attack Speed | Range | # of Targets | Notes
+----------- | -------- | ------------ | ---- | ------ | ------------ | ----- | ------------ | -----
+Air         | Basic    | Air          | 60   | 1      | 0.5 sec      | 5     | 1            | Fast Attacks
+Earth       | Basic    | Earth        | 100  | 5      | 2.0 sec      | 2     | 2*           | Multishot*
+Fire        | Basic    | Fire         | 120  | 2      | 1.0 sec      | 3     | 1            | Attack Modifier, Burn: Deals 1 dps for 2 sec
+Water       | Basic    | Water        | 80   | 2      | 1.5 sec      | 4     | 1            | Attack Modifier, Gush: Slows enemies by 25% for 2 sec
+Lightning   | Advanced | Air, Fire    | #    | #      | #            | #     | 1            | To be designed
+Ice         | Advanced | Earth, Water | #    | #      | #            | #     | 3*           | To be designed
+Tornado     | Advanced | Water, Air   | #    | #      | #            | #     | 1            | To be designed
+Volcano     | Advanced | Fire, Earth  | #    | #      | #            | #     | 5*           | To be designed
+Apocalypse  | Expert   | All          | #    | #      | #            | #     | #            | Not created yet
+
+\*to be implemented
 
 ### Enemies
 Enemy  | Color  | Health | Damage | Worth | Move Speed
