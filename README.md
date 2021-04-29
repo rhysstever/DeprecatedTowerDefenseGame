@@ -35,5 +35,5 @@ Wave | Enemy Count | Enemy Type
 2    | 2           | Heavy
 3    | 4           | Light
 4    | 4           | Normal
-5    | 4           | Heavy
-6    | 4           | Light
+5    | 6           | Light
+6    | 4           | Heavy
