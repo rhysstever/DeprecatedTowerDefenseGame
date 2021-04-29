@@ -13,11 +13,10 @@ public class CameraManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        moveSpeed = 0.05f;
+        moveSpeed = 0.2f;
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if(gameObject.GetComponent<GameManager>().currentMenuState == MenuState.game) {
             // Controls
@@ -27,7 +26,6 @@ public class CameraManager : MonoBehaviour
             //  D                - Pans camera to the right
             //  Scrolling Up     - Zooms the camera in
             //  Scrolling Down   - Zooms the camera out
-
             if(Input.GetKey(KeyCode.W))
                 camParent.transform.Translate(0.0f, 0.0f, moveSpeed);
             else if(Input.GetKey(KeyCode.A))

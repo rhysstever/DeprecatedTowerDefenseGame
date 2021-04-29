@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
+    // ===== Set in inspector =====
     public CheckpointType type;
+
+    // ===== Set at creation =====
     public int num;
     public GameObject nextCheckpoint;
     

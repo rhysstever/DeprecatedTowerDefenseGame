@@ -19,8 +19,8 @@ public enum TowerType
 	Water		= 4000,
 	Lightning	=  301,
 	Volcano		=  320,
-	Ice			= 4001,
-	Quicksand	= 4020
+	Tornado		= 4001,
+	Ice			= 4020
 }
 
 public class Tower : MonoBehaviour

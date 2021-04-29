@@ -47,18 +47,13 @@ public class Enemy : MonoBehaviour
         }
     }
 
-	void FixedUpdate()
-	{
-        if(canMove)
-            Move();
-    }
-
     /// <summary>
     /// Moves the enemy closer to its next checkpoint until it gets close enough to move to the next checkpoint
     /// </summary>
-    void Move()
+    public void Move()
     {
-        gameObject.transform.position += NextMoveVec();
+        if(canMove)
+            gameObject.transform.position += NextMoveVec();
     }
 
     /// <summary>

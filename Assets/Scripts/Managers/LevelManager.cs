@@ -156,7 +156,7 @@ public class LevelManager : MonoBehaviour
         Map map1 = new Map("Back n' Forth", map1Layout, 6, MapDifficulty.Easy, mapImages[0]);
         Map map2 = new Map("Spiral", map2Layout, 6, MapDifficulty.Easy, mapImages[1]);
         Map map3 = new Map("U-Turn", map3Layout, 2, MapDifficulty.Medium, mapImages[2]);
-        Map map4 = new Map("Line", map4Layout, 0, MapDifficulty.Hard, mapImages[3]);
+        Map map4 = new Map("The Line", map4Layout, 0, MapDifficulty.Hard, mapImages[3]);
 
         // Add maps to list
         maps.Add(map1);
@@ -253,20 +253,21 @@ public class LevelManager : MonoBehaviour
                 switch(selectedMap[r, c].Substring(0, 1)) {
                     case "S":
                         // Starting Checkpoint
-                        GameObject entrance = CreateCheckpoint(checkpoints, new Vector2(r, c), CheckpointType.Entrance);
+                        GameObject entrance = CreateCheckpoint(checkpoints, new Vector2(r, c), 0, CheckpointType.Entrance);
                         cps[0] = entrance;
                         break;
                     case "C":
                         // Checkpoint
-                        GameObject checkpoint = CreateCheckpoint(checkpoints, new Vector2(r, c));
                         int cpNum = int.Parse(selectedMap[r, c].Substring(1, 1));
+                        GameObject checkpoint = CreateCheckpoint(checkpoints, new Vector2(r, c), cpNum);
                         checkpoint.name = "checkpoint" + cpNum;
                         cps[cpNum] = checkpoint;
                         break;
                     case "E":
                         // Exit Checkpoint
-                        GameObject exit = CreateCheckpoint(checkpoints, new Vector2(r, c), CheckpointType.Exit);
-                        cps[checkpointCount + 1] = exit;
+                        int exitCPNum = checkpointCount + 1;
+                        GameObject exit = CreateCheckpoint(checkpoints, new Vector2(r, c), exitCPNum, CheckpointType.Exit);
+                        cps[exitCPNum] = exit;
                         break;
                     case "=":
                         // Path
@@ -328,11 +329,11 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     /// <param name="parent">The GO that will hold the checkpoint in the scene</param>
     /// <param name="coordinates">The row and column # of the checkpoint</param>
-    /// <param name="nextCheckpoint">The checkpoint after the current checkpoint</param>
+    /// <param name="cpNum">The number assigned to the checkpoint</param>
     /// <returns>The newly created checkpoint</returns>
-    GameObject CreateCheckpoint(GameObject parent, Vector2 coordinates)
+    GameObject CreateCheckpoint(GameObject parent, Vector2 coordinates, int cpNum)
 	{
-        return CreateCheckpoint(parent, coordinates, CheckpointType.Checkpoint);
+        return CreateCheckpoint(parent, coordinates, cpNum, CheckpointType.Checkpoint);
 	}
 
     /// <summary>
@@ -340,9 +341,10 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     /// <param name="parent">The GO that will hold the checkpoint in the scene</param>
     /// <param name="coordinates">The row and column # of the checkpoint</param>
-    /// <param name="nextCheckpoint">The checkpoint after the current checkpoint</param>
+    /// <param name="cpNum">The number assigned to the checkpoint</param>
+    /// <param name="checkpointType">The type of the checkpoint</param>
     /// <returns>The newly created checkpoint</returns>
-    GameObject CreateCheckpoint(GameObject parent, Vector2 coordinates, CheckpointType checkpointType)
+    GameObject CreateCheckpoint(GameObject parent, Vector2 coordinates, int cpNum, CheckpointType checkpointType)
 	{
         // Calculates the position of the checkpoint based on the row and column numbers given
         Vector3 position = Vector3.zero;
@@ -374,7 +376,7 @@ public class LevelManager : MonoBehaviour
 
         newCP.GetComponent<Checkpoint>().type = checkpointType;
         newCP.GetComponent<MapObject>().coordinates = coordinates;
-        newCP.GetComponent<Checkpoint>().num = (level.transform.Find("checkpoints").childCount - 1);
+        newCP.GetComponent<Checkpoint>().num = cpNum;
 
         return newCP;
     }

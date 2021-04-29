@@ -10,7 +10,7 @@ public class TowerManager : MonoBehaviour
 	// Basic tower prefabs
 	public GameObject airTowerPrefab, earthTowerPrefab, fireTowerPrefab, waterTowerPrefab;
 	// Advanced tower prefabs
-	public GameObject lightningTowerPrefab, iceTowerPrefab, quicksandTowerPrefab, volcanoTowerPrefab;
+	public GameObject lightningTowerPrefab, iceTowerPrefab, tornadoTowerPrefab, volcanoTowerPrefab;
 	public GameObject bulletPrefab;
 
 	// Set at Start()
@@ -150,8 +150,8 @@ public class TowerManager : MonoBehaviour
 			case TowerType.Ice:
 				towerPrefab = iceTowerPrefab;
 				break;
-			case TowerType.Quicksand:
-				towerPrefab = quicksandTowerPrefab;
+			case TowerType.Tornado:
+				towerPrefab = tornadoTowerPrefab;
 				break;
 			case TowerType.Volcano:
 				towerPrefab = volcanoTowerPrefab;
@@ -279,14 +279,34 @@ public class TowerManager : MonoBehaviour
 	void TargetEnemies()
 	{
 		GameObject enemies = gameObject.GetComponent<EnemyManager>().enemies;
-		foreach(Transform towerTransform in towers.transform) { 
+		int farthestNextCP = 0;
+		float closestDistanceToCP = 0.0f;
+		foreach(Transform towerTransform in towers.transform) {
+			GameObject enemyToTarget = null;
 			foreach(Transform enemyTransform in enemies.transform) {
-				// Finds the enemy that is closest to the tower
-				// ===== TO FIX ===== change to be farthest enemy along the map
-				if(Vector3.Distance(towerTransform.position,
-				enemyTransform.position) <= towerTransform.gameObject.GetComponent<Tower>().range)
-					towerTransform.gameObject.GetComponent<Tower>().currentEnemy = enemyTransform.gameObject;
+				// If the enemy is within range of the tower
+				if(Vector3.Distance(towerTransform.position, enemyTransform.position) 
+					<= towerTransform.gameObject.GetComponent<Tower>().range) {
+					// Gets the checkpoint number of the current enemy
+					int nextCP = enemyTransform.gameObject.GetComponent<Enemy>().currentCheckpoint.GetComponent<Checkpoint>().num;
+					// Gets the distance from the current enemy to its checkpoint
+					float distanceToCP = Math.Abs(Vector3.Distance(enemyTransform.gameObject.transform.position,
+						enemyTransform.gameObject.GetComponent<Enemy>().currentCheckpoint.transform.position));
+					// If the tower doesnt have an enemy targeted yet itll target the current enemy
+					if(enemyToTarget == null)
+						enemyToTarget = enemyTransform.gameObject;
+					// If the enemy's current checkpoint and distance to that cp
+					else if(nextCP >= farthestNextCP 
+						&& distanceToCP < closestDistanceToCP) {
+						// Saves the current enemy
+						farthestNextCP = nextCP;
+						closestDistanceToCP = distanceToCP;
+						enemyToTarget = enemyTransform.gameObject;
+					}
+				}
 			}
+			// After looping through all enemies, makes the tower target the saved enemy
+			towerTransform.gameObject.GetComponent<Tower>().currentEnemy = enemyToTarget;
 		}
 	}
 

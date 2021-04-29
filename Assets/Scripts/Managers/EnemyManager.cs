@@ -46,7 +46,8 @@ public class EnemyManager : MonoBehaviour
 
 	void FixedUpdate()
 	{
-        if(currentWave.HasSpawned
+        if(gameObject.GetComponent<GameManager>().currentMenuState == MenuState.game
+            && currentWave.HasSpawned
             && !currentWave.HasCleared) {
             // Increments timer
             spawnTimer += Time.deltaTime;
@@ -57,6 +58,8 @@ public class EnemyManager : MonoBehaviour
                 spawnTimer = 0.0f;
                 SpawnEnemy(currentWave.EnemyPrefab);
             }
+
+            UpdateEnemies();
         }
     }
 
@@ -76,8 +79,11 @@ public class EnemyManager : MonoBehaviour
     /// </summary>
     /// <returns>The first wave</returns>
     Wave CreateWaves()
-	{
-		Wave wave3 = new Wave("Wave 3", yellowEnemyPrefab, 4, 0.5f);
+    {
+        Wave wave6 = new Wave("Wave 6", blueEnemyPrefab, 4, 1.0f);
+        Wave wave5 = new Wave("Wave 5", yellowEnemyPrefab, 6, 0.5f, wave6);
+        Wave wave4 = new Wave("Wave 4", redEnemyPrefab, 4, 0.5f, wave5);
+        Wave wave3 = new Wave("Wave 3", yellowEnemyPrefab, 4, 0.5f, wave4);
 		Wave wave2 = new Wave("Wave 2", blueEnemyPrefab, 2, 1.0f, wave3);
         Wave wave1 = new Wave("Wave 1", redEnemyPrefab, 3, 0.5f, wave2);
 
@@ -104,9 +110,19 @@ public class EnemyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Checks all enemies to see if they lost all health or reached the exit
+    /// Loops through all enemies, moving them accordingly
     /// </summary>
-    void CheckEnemies()
+	void UpdateEnemies()
+	{
+		foreach(Transform enemyTransform in enemies.transform) {
+            enemyTransform.gameObject.GetComponent<Enemy>().Move();
+		}
+	}
+
+	/// <summary>
+	/// Checks all enemies to see if they lost all health or reached the exit
+	/// </summary>
+	void CheckEnemies()
 	{
         List<GameObject> destroyedEnemies = new List<GameObject>();
         Vector3 exitPos = gameObject.GetComponent<LevelManager>().level.transform.Find("checkpoints").transform.Find("exit").position;
@@ -118,7 +134,7 @@ public class EnemyManager : MonoBehaviour
 			if(enemy.GetComponent<Enemy>().health <= 0.0f) {
                 gameObject.GetComponent<GameManager>().money += enemy.GetComponent<Enemy>().worth;
                 destroyedEnemies.Add(enemy);
-			}
+            }
 			// If the enemy has reached the exit
 			else if(Vector3.Distance(enemy.transform.position, exitPos) <= 0.5f) {
 				gameObject.GetComponent<GameManager>().health -= enemy.GetComponent<Enemy>().damage;
@@ -129,6 +145,7 @@ public class EnemyManager : MonoBehaviour
         // At the end, loops through and destroys each enemy in the list
         foreach(GameObject enemy in destroyedEnemies) {
             Destroy(enemy);
+            currentWave.EnemyRemoved();
         }
     }
 }
