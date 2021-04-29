@@ -18,6 +18,9 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     GameObject playButton;
 
+    [SerializeField]
+    GameObject quitGameButtonMainMenu;
+
     // Level Select UI Elements
     [SerializeField]
     GameObject levelSelectParentObj;
@@ -96,6 +99,9 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     GameObject backToMainMenuButton;
 
+    [SerializeField]
+    GameObject quitGameButtonGameOver;
+
     // ===== Set at Start() ===== 
     private List<GameObject> parentObjs;
 
@@ -105,6 +111,7 @@ public class UIManager : MonoBehaviour
         // MainMenu Elements
         playButton.GetComponent<Button>().onClick.AddListener(() => 
             gameObject.GetComponent<GameManager>().ChangeMenuState(MenuState.levelSelect));
+        quitGameButtonMainMenu.GetComponent<Button>().onClick.AddListener(() => Application.Quit());
 
         // LevelSelect Elements
         playMapButton.GetComponent<Button>().onClick.AddListener(() =>
@@ -127,6 +134,7 @@ public class UIManager : MonoBehaviour
         // GameOver Elements
         backToMainMenuButton.GetComponent<Button>().onClick.AddListener(() =>
             gameObject.GetComponent<GameManager>().ChangeMenuState(MenuState.mainMenu));
+        quitGameButtonGameOver.GetComponent<Button>().onClick.AddListener(() => Application.Quit());
 
         // Parent UI Elements
         parentObjs = new List<GameObject>();
