@@ -136,7 +136,8 @@ public class EnemyManager : MonoBehaviour
                 destroyedEnemies.Add(enemy);
             }
 			// If the enemy has reached the exit
-			else if(Vector3.Distance(enemy.transform.position, exitPos) <= 0.5f) {
+			else if(enemy.GetComponent<Enemy>().currentCheckpoint == null
+                && enemy.GetComponent<Enemy>().distanceToNextCP <= 0.5f) {
 				gameObject.GetComponent<GameManager>().health -= enemy.GetComponent<Enemy>().damage;
                 destroyedEnemies.Add(enemy);
             }

@@ -35,7 +35,7 @@ public class Tower : MonoBehaviour
 	public int numOfTargets;
 
 	// Set at Start()
-	public GameObject currentEnemy;
+	public GameObject targetedEnemy;
 	public bool isUpgradable;
     public float shotTimer;
     
@@ -45,7 +45,7 @@ public class Tower : MonoBehaviour
 	// Start is called before the first frame update
     void Start()
     {
-		currentEnemy = null;
+		targetedEnemy = null;
 		isUpgradable = Enum.IsDefined(typeof(TowerType), (int)(towerTier + 1));
 		shotTimer = attackTime;    // the tower can shoot immediately
     }
@@ -54,7 +54,7 @@ public class Tower : MonoBehaviour
     void Update()
     {
 		RotateToCurrentEnemy();
-    }
+	}
 
 	void FixedUpdate()
 	{
@@ -67,7 +67,7 @@ public class Tower : MonoBehaviour
 	/// <returns>Returns true if the tower has a targeted enemy and its timer is high enough</returns>
 	public bool CanShoot()
 	{
-		if(currentEnemy != null
+		if(targetedEnemy != null
 			&& shotTimer >= attackTime)
 			return true;
 
@@ -77,25 +77,19 @@ public class Tower : MonoBehaviour
 	/// <summary>
 	/// Deals damage to the current enemy
 	/// </summary>
-    public void DealDamage()
+    public void DealDamage(GameObject enemy)
 	{
-		// Checks that the enemy is not null and is actually an enemy
-		if(currentEnemy == null
-			|| currentEnemy.GetComponent<Enemy>() == null) {
-			Debug.Log("This is not an enemy!");
-			return;
-		}
-
-		// Deals damage to enemy, applys the attack modifier's affliction to the enemy
-		currentEnemy.GetComponent<Enemy>().TakeDamage(damage);
+		// Deals damage to the targeted enemy
+		enemy.GetComponent<Enemy>().TakeDamage(damage);
+		// Applies the tower's affliction to the enemy if it has one
 		if(gameObject.GetComponent<Affliction>() != null) {
 			Type type = Type.GetType("Affliction");
-			currentEnemy.AddComponent(type);
-			currentEnemy.GetComponent<Affliction>().type = gameObject.GetComponent<Affliction>().type;
-			currentEnemy.GetComponent<Affliction>().totalDuration = gameObject.GetComponent<Affliction>().totalDuration;
-			currentEnemy.GetComponent<Affliction>().currentTime = gameObject.GetComponent<Affliction>().totalDuration;
-			currentEnemy.GetComponent<Affliction>().tickFrequency = gameObject.GetComponent<Affliction>().tickFrequency;
-			currentEnemy.GetComponent<Affliction>().amount = gameObject.GetComponent<Affliction>().amount;
+			enemy.AddComponent(type);
+			enemy.GetComponent<Affliction>().type = gameObject.GetComponent<Affliction>().type;
+			enemy.GetComponent<Affliction>().totalDuration = gameObject.GetComponent<Affliction>().totalDuration;
+			enemy.GetComponent<Affliction>().currentTime = gameObject.GetComponent<Affliction>().totalDuration;
+			enemy.GetComponent<Affliction>().tickFrequency = gameObject.GetComponent<Affliction>().tickFrequency;
+			enemy.GetComponent<Affliction>().amount = gameObject.GetComponent<Affliction>().amount;
 		}
 
 		// Reset timer
@@ -107,8 +101,8 @@ public class Tower : MonoBehaviour
 	/// </summary>
 	void RotateToCurrentEnemy()
 	{
-		if(currentEnemy != null) {
-			gameObject.transform.LookAt(currentEnemy.transform);
+		if(targetedEnemy != null) {
+			gameObject.transform.LookAt(targetedEnemy.transform);
 			Quaternion newQuat = gameObject.transform.rotation;
 			newQuat.x = 0.0f;
 			newQuat.z = 0.0f;

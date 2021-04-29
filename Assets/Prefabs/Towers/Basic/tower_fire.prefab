@@ -243,7 +243,7 @@ MonoBehaviour:
   attackTime: 1
   range: 3
   numOfTargets: 1
-  currentEnemy: {fileID: 0}
+  targetedEnemy: {fileID: 0}
   isUpgradable: 0
   shotTimer: 0
   tile: {fileID: 0}

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,11 +17,13 @@ public class Enemy : MonoBehaviour
     public GameObject currentCheckpoint;
 
     // ===== Set at Start() ===== 
-    bool canMove;
+    public float distanceToNextCP;
+    private bool canMove;
     
     // Start is called before the first frame update
     void Start()
     {
+        distanceToNextCP = Math.Abs(Vector3.Distance(gameObject.transform.position, currentCheckpoint.transform.position));
         canMove = true;
         RotateToNextCP();
     }
@@ -34,9 +37,11 @@ public class Enemy : MonoBehaviour
         if(gameObject.GetComponents<Affliction>().Length > 0)
             ProcessAfflictions(gameObject.GetComponents<Affliction>());
 
+        distanceToNextCP = Math.Abs(Vector3.Distance(gameObject.transform.position, currentCheckpoint.transform.position));
+
         // If the enemy is close enough to the checkpoint, the current checkpoint is update to 
         // the next checkpoint and the enemy is rotated accordingly
-        if(Vector3.Distance(gameObject.transform.position, currentCheckpoint.transform.position) <= 0.5f)
+        if(distanceToNextCP <= 0.5f)
             canMove = false;
 		else  // If the enemy is still too far away from the checkpoint, it is moved to be closer
             canMove = true;

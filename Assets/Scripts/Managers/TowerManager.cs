@@ -40,10 +40,17 @@ public class TowerManager : MonoBehaviour
 				gameObject.GetComponent<UIManager>().UpdateTowerUpgradeButtons(FindEligibleUpgradeTypes(currentSelectedGameObject));
 
 			// Updating Towers
-			TargetEnemies();
-			ShootEnemies();
-			UpdateBullets();
+			foreach(Transform towerTransform in towers.transform) {
+				TargetEnemies(towerTransform.gameObject);
+				ShootEnemies(towerTransform.gameObject);
+			}
 		}
+	}
+
+	void FixedUpdate()
+	{
+		// Bullets are in FixedUpdate() bc it deals with movement that uses Time.deltaTime
+		UpdateBullets();
 	}
 
 	/// <summary>
@@ -274,63 +281,67 @@ public class TowerManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Loops through towers and enemies, targeting an enemy for each tower, if able
+	/// Loops through all enemies, targeting an enemy for the tower, if able
 	/// </summary>
-	void TargetEnemies()
+	/// <param name="tower">The tower looking for enemies to target</param>
+	void TargetEnemies(GameObject tower)
 	{
 		GameObject enemies = gameObject.GetComponent<EnemyManager>().enemies;
 		int farthestNextCP = 0;
-		float closestDistanceToCP = 0.0f;
-		foreach(Transform towerTransform in towers.transform) {
-			GameObject enemyToTarget = null;
-			foreach(Transform enemyTransform in enemies.transform) {
-				// If the enemy is within range of the tower
-				if(Vector3.Distance(towerTransform.position, enemyTransform.position) 
-					<= towerTransform.gameObject.GetComponent<Tower>().range) {
-					// Gets the checkpoint number of the current enemy
-					int nextCP = enemyTransform.gameObject.GetComponent<Enemy>().currentCheckpoint.GetComponent<Checkpoint>().num;
-					// Gets the distance from the current enemy to its checkpoint
-					float distanceToCP = Math.Abs(Vector3.Distance(enemyTransform.gameObject.transform.position,
-						enemyTransform.gameObject.GetComponent<Enemy>().currentCheckpoint.transform.position));
-					// If the tower doesnt have an enemy targeted yet itll target the current enemy
-					if(enemyToTarget == null)
-						enemyToTarget = enemyTransform.gameObject;
-					// If the enemy's current checkpoint and distance to that cp
-					else if(nextCP >= farthestNextCP 
-						&& distanceToCP < closestDistanceToCP) {
-						// Saves the current enemy
-						farthestNextCP = nextCP;
-						closestDistanceToCP = distanceToCP;
-						enemyToTarget = enemyTransform.gameObject;
-					}
+		float closestDistanceToCP = float.MaxValue;
+		GameObject enemyToTarget = null;
+		foreach(Transform enemyTransform in enemies.transform) {
+			// If the enemy is within range of the tower
+			if(Vector3.Distance(tower.transform.position, enemyTransform.position) 
+				<= tower.GetComponent<Tower>().range) {
+				// Gets the checkpoint number of the current enemy
+				int nextCP = enemyTransform.gameObject.GetComponent<Enemy>().currentCheckpoint.GetComponent<Checkpoint>().num;
+				
+				// Gets the distance from the current enemy to its checkpoint
+				float distanceToCP = enemyTransform.gameObject.GetComponent<Enemy>().distanceToNextCP;
+				
+				// If the tower doesnt have an enemy targeted yet itll target the current enemy
+				if(enemyToTarget == null)
+					enemyToTarget = enemyTransform.gameObject;
+				// If the enemies' checkpoints are the same, the distances are compared
+				else if(nextCP == farthestNextCP 
+					&& distanceToCP < closestDistanceToCP) {
+					Debug.Log("Closer distance");
+					// Saves the current enemy if its distance is less
+					farthestNextCP = nextCP;
+					closestDistanceToCP = distanceToCP;
+					enemyToTarget = enemyTransform.gameObject;
 				}
 			}
-			// After looping through all enemies, makes the tower target the saved enemy
-			towerTransform.gameObject.GetComponent<Tower>().currentEnemy = enemyToTarget;
 		}
+
+		// Sets the new enemy as the tower's targeted enemy
+		tower.GetComponent<Tower>().targetedEnemy = enemyToTarget;
 	}
 
 	/// <summary>
-	/// Loops through each tower, if it can shoot, it will fire a bullet at the enemy
+	/// If the tower can shoot, it will fire a bullet at each of its targeted enemies
 	/// </summary>
-	void ShootEnemies()
+	/// <param name="tower">The tower shooting</param>
+	void ShootEnemies(GameObject tower)
 	{
-		foreach(Transform towerTransform in towers.transform) { 
-			GameObject tower = towerTransform.gameObject;
-			if(tower.GetComponent<Tower>().CanShoot()) {
-				// Reset shot timer
-				tower.GetComponent<Tower>().shotTimer = 0.0f;
-				// Spawn a bullet at the tower to target the current enemy
-				Vector3 bulletPos = tower.transform.position;
-				GameObject newBullet = Instantiate(
-					bulletPrefab,
-					bulletPos,
-					Quaternion.identity,
-					bullets.transform);
-				newBullet.GetComponent<Bullet>().target = tower.GetComponent<Tower>().currentEnemy;
-				newBullet.GetComponent<Bullet>().parentTower = tower;
-			}
+		// If the tower cannot shoot or has no enemy targeted, it won't shoot
+		if(!tower.GetComponent<Tower>().CanShoot()
+			|| tower.GetComponent<Tower>().targetedEnemy == null) {
+			return;
 		}
+
+		// Reset shot timer
+		tower.GetComponent<Tower>().shotTimer = 0.0f;
+		// Spawns a bullet at the tower to target the current enemy
+		Vector3 bulletPos = tower.transform.position;
+		GameObject newBullet = Instantiate(
+			bulletPrefab,
+			bulletPos,
+			Quaternion.identity,
+			bullets.transform);
+		newBullet.GetComponent<Bullet>().target = tower.GetComponent<Tower>().targetedEnemy;
+		newBullet.GetComponent<Bullet>().parentTower = tower;
 	}
 
 	/// <summary>
@@ -353,7 +364,7 @@ public class TowerManager : MonoBehaviour
 			// and the bullet is added to a list to be destroyed later
 			if(Vector3.Distance(bullet.transform.position, 
 				bullet.GetComponent<Bullet>().target.transform.position) <= 0.5f) {
-				bullet.GetComponent<Bullet>().parentTower.GetComponent<Tower>().DealDamage();
+				bullet.GetComponent<Bullet>().parentTower.GetComponent<Tower>().DealDamage(bullet.GetComponent<Bullet>().target);
 				destroyedBullets.Add(bullet);
 			}  // If the bullet is not close enough to the enemy, it is moved closer
 			else {
