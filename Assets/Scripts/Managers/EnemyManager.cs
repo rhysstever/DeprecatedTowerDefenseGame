@@ -115,10 +115,11 @@ public class EnemyManager : MonoBehaviour
 	void UpdateEnemies()
 	{
 		foreach(Transform enemyTransform in enemies.transform) {
+            // Sets the enemy's speed to its base speed
 			enemyTransform.gameObject.GetComponent<Enemy>().currentMoveSpeed = enemyTransform.gameObject.GetComponent<Enemy>().moveSpeed;
-			if(enemyTransform.gameObject.GetComponent<Enemy>().activeAfflictions != null
-                && enemyTransform.gameObject.GetComponent<Enemy>().activeAfflictions.Count > 0)
-                enemyTransform.gameObject.GetComponent<Enemy>().ProcessAfflictions();
+            // If the enemy has any afflictions, they are processed
+			enemyTransform.gameObject.GetComponent<Enemy>().ProcessAfflictions();
+            // Moves the enemy at the end
             enemyTransform.gameObject.GetComponent<Enemy>().Move();
         }
 	}

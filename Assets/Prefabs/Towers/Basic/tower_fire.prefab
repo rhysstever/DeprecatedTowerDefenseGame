@@ -201,7 +201,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8910245781635599046}
   - component: {fileID: -4507115723785744690}
-  - component: {fileID: 54202646377523643}
+  - component: {fileID: 3743026274414362972}
   m_Layer: 0
   m_Name: tower_fire
   m_TagString: Tower
@@ -247,7 +247,7 @@ MonoBehaviour:
   isUpgradable: 0
   shotTimer: 0
   tile: {fileID: 0}
---- !u!114 &54202646377523643
+--- !u!114 &3743026274414362972
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -256,11 +256,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 8910245781635599045}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1b3b5cb95c619448b01d10086490013, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b7838079e777634a8a6830add543e72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modifierName: Burn
-  modifierType: 1
+  afflictionName: Burn
+  type: 1
   totalDuration: 2
-  amount: 1
-  procFrequency: 1000
+  currentTime: 0
+  procDamage: 1
+  procFrequency: 1

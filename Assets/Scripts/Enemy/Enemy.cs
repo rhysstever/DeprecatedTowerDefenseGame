@@ -34,7 +34,6 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		// Sets the current move speed to its initial speed
         distanceToNextCP = Math.Abs(Vector3.Distance(gameObject.transform.position, currentCheckpoint.transform.position));
 
         // If the enemy is close enough to the checkpoint, the current checkpoint is update to 
@@ -103,20 +102,15 @@ public class Enemy : MonoBehaviour
     /// <summary>
     /// Removes any afflictions if they have expired
     /// </summary>
+    /// <param name="afflictions">A list of affliction components</param>
     public void ProcessAfflictions()
 	{
-        // Check if any afflictions have expired, 
-        // otherwise, process the affliction's effect
-        List<string> deadAfflictionNames = new List<string>();
-        foreach(string afflictionName in activeAfflictions.Keys) {
-            if(activeAfflictions[afflictionName].currentTime <= 0.0f)
-                deadAfflictionNames.Add(afflictionName);
+        Affliction[] afflictions = gameObject.GetComponents<Affliction>();
+        for(int i = 0; i < afflictions.Length; i++) {
+            if(afflictions[i].GetComponent<Affliction>().currentTime < 0.0f)
+                Destroy(afflictions[i]);
             else
-                activeAfflictions[afflictionName].ProcessAffliction(gameObject);
+                afflictions[i].GetComponent<Affliction>().ProcessAffliction();
         }
-
-        foreach(string deadAfflictionName in deadAfflictionNames) {
-            activeAfflictions.Remove(deadAfflictionName);
-        }
-    }
+	}
 }
