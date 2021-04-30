@@ -2,17 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum AfflictionType
+{
+    DamageOverTime,
+    Slow,
+    Stun    // nothing special, uses base Afflcition code
+}
+
 public class Affliction : MonoBehaviour
 {
 	public string afflictionName;
-    public Modifier type;
+    public AfflictionType type;
     public float totalDuration;
     public float currentTime;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        currentTime = totalDuration;
     }
 
     // Update is called once per frame
@@ -26,7 +33,7 @@ public class Affliction : MonoBehaviour
         currentTime -= Time.deltaTime;
 
         switch(type) {
-            case Modifier.Stun:
+            case AfflictionType.Stun:
                 gameObject.GetComponent<Enemy>().currentMoveSpeed = 0.0f;
                 break;
         }

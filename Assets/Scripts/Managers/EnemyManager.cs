@@ -130,7 +130,6 @@ public class EnemyManager : MonoBehaviour
 	void CheckEnemies()
 	{
         List<GameObject> destroyedEnemies = new List<GameObject>();
-        Vector3 exitPos = gameObject.GetComponent<LevelManager>().level.transform.Find("checkpoints").transform.Find("exit").position;
 
 		// Loops through each enemy child, checking if they need to be removed
         foreach(Transform enemyTransform in enemies.transform) {

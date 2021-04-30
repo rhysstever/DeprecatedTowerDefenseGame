@@ -81,33 +81,45 @@ public class Tower : MonoBehaviour
 	{
 		// Deals damage to the targeted enemy
 		enemy.GetComponent<Enemy>().TakeDamage(damage);
-		// If the tower has an attack modifier
+		// If the tower has an affliction
 		if(gameObject.GetComponent<Affliction>() != null) {
 			Type compType = null;
+			// Checks the type of affliction the tower has,
+			// if the enemy doesn't have the affliction alreayd, then the afflcition is added to the enemy,
+			// if the enemy already has it then its timer is reset
 			switch(gameObject.GetComponent<Affliction>().type) {
-				case Modifier.DamageOverTime:
+				case AfflictionType.DamageOverTime:
 					compType = Type.GetType("DamageOverTime");
-					enemy.AddComponent(compType);
-					enemy.GetComponent<DamageOverTime>().type = gameObject.GetComponent<DamageOverTime>().type;
-					enemy.GetComponent<DamageOverTime>().totalDuration = gameObject.GetComponent<DamageOverTime>().totalDuration;
-					enemy.GetComponent<DamageOverTime>().currentTime = gameObject.GetComponent<DamageOverTime>().totalDuration;
-					enemy.GetComponent<DamageOverTime>().procFrequency = gameObject.GetComponent<DamageOverTime>().procFrequency;
-					enemy.GetComponent<DamageOverTime>().procDamage = gameObject.GetComponent<DamageOverTime>().procDamage;
+					if(enemy.GetComponent<DamageOverTime>() == null) {
+						enemy.AddComponent(compType);
+						enemy.GetComponent<DamageOverTime>().type = gameObject.GetComponent<DamageOverTime>().type;
+						enemy.GetComponent<DamageOverTime>().totalDuration = gameObject.GetComponent<DamageOverTime>().totalDuration;
+						enemy.GetComponent<DamageOverTime>().procFrequency = gameObject.GetComponent<DamageOverTime>().procFrequency;
+						enemy.GetComponent<DamageOverTime>().procDamage = gameObject.GetComponent<DamageOverTime>().procDamage;
+					} else {
+						enemy.GetComponent<DamageOverTime>().ResetTimer();
+					}
 					break;
-				case Modifier.Slow:
+				case AfflictionType.Slow:
 					compType = Type.GetType("Slow");
-					enemy.AddComponent(compType);
-					enemy.GetComponent<Slow>().type = gameObject.GetComponent<Slow>().type;
-					enemy.GetComponent<Slow>().totalDuration = gameObject.GetComponent<Slow>().totalDuration;
-					enemy.GetComponent<Slow>().currentTime = gameObject.GetComponent<Slow>().totalDuration;
-					enemy.GetComponent<Slow>().slowPercentage = gameObject.GetComponent<Slow>().slowPercentage;
+					if(enemy.GetComponent<Slow>() == null) {
+						enemy.AddComponent(compType);
+						enemy.GetComponent<Slow>().type = gameObject.GetComponent<Slow>().type;
+						enemy.GetComponent<Slow>().totalDuration = gameObject.GetComponent<Slow>().totalDuration;
+						enemy.GetComponent<Slow>().slowPercentage = gameObject.GetComponent<Slow>().slowPercentage;
+					} else {
+						enemy.GetComponent<Slow>().ResetTimer();
+					}
 					break;
-				case Modifier.Stun:
+				case AfflictionType.Stun:
 					compType = Type.GetType("Affliction");
-					enemy.AddComponent(compType);
-					enemy.GetComponent<Affliction>().type = gameObject.GetComponent<Slow>().type;
-					enemy.GetComponent<Affliction>().totalDuration = gameObject.GetComponent<Slow>().totalDuration;
-					enemy.GetComponent<Affliction>().currentTime = gameObject.GetComponent<Slow>().totalDuration;
+					if(enemy.GetComponent<Affliction>() == null) {
+						enemy.AddComponent(compType);
+						enemy.GetComponent<Affliction>().type = gameObject.GetComponent<Affliction>().type;
+						enemy.GetComponent<Affliction>().totalDuration = gameObject.GetComponent<Affliction>().totalDuration;
+					} else {
+						enemy.GetComponent<Affliction>().ResetTimer();
+					}
 					break;
 			}
 		}

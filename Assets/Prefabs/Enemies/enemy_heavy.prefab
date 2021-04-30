@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 8242119779928304448}
   - component: {fileID: -8668024837806388444}
   m_Layer: 0
-  m_Name: enemy_blue
+  m_Name: enemy_heavy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -240,5 +240,6 @@ MonoBehaviour:
   damage: 10
   worth: 40
   moveSpeed: 5
-  currentMoveSpeed: 5
   currentCheckpoint: {fileID: 0}
+  distanceToNextCP: 0
+  currentMoveSpeed: 5
