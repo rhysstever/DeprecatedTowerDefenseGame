@@ -5,7 +5,7 @@ A game built in Unity where the player must build towers to defend their base. T
 1. Go to the [Versions](Versions) folder
 2. Download the newest version
 3. Unzip it
-4. Run the .exe (Note: do not run "UnityCrashHandler64.exe", run the other .exe)
+4. Run TowerDefenseGame.exe (Note: DONT run "UnityCrashHandler64.exe")
 
 ## Game Info
 ### Towers
