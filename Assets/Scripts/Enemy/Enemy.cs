@@ -11,7 +11,6 @@ public class Enemy : MonoBehaviour
 	public int damage;
     public int worth;
     public float moveSpeed;
-    public float currentMoveSpeed;
 
     // Set when created
     public GameObject currentCheckpoint;
@@ -19,6 +18,7 @@ public class Enemy : MonoBehaviour
     // ===== Set at Start() ===== 
     public float distanceToNextCP;
 	public Dictionary<string, Affliction> activeAfflictions;
+    public float currentMoveSpeed;
     private bool canMove;
     
     // Start is called before the first frame update
@@ -27,15 +27,14 @@ public class Enemy : MonoBehaviour
         distanceToNextCP = Math.Abs(Vector3.Distance(gameObject.transform.position, currentCheckpoint.transform.position));
         activeAfflictions = new Dictionary<string, Affliction>();
         canMove = true;
+		currentMoveSpeed = moveSpeed;
         RotateToNextCP();
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Sets the current move speed to its initial speed
-        currentMoveSpeed = moveSpeed;
-
+		// Sets the current move speed to its initial speed
         distanceToNextCP = Math.Abs(Vector3.Distance(gameObject.transform.position, currentCheckpoint.transform.position));
 
         // If the enemy is close enough to the checkpoint, the current checkpoint is update to 

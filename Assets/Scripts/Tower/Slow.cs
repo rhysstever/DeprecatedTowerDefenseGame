@@ -15,8 +15,11 @@ public class Slow : Affliction
 
     public override void ProcessAffliction(GameObject enemy)
     {
-        enemy.GetComponent<Enemy>().currentMoveSpeed *= (1 - (slowPercentage / 100));
-        Debug.Log("slowed by " + slowPercentage);
+		float newMoveSpeed = enemy.GetComponent<Enemy>().currentMoveSpeed * (1 - (slowPercentage / 100));
+
+		enemy.GetComponent<Enemy>().currentMoveSpeed = newMoveSpeed;
+
+		Debug.Log("slowed to " + newMoveSpeed);
         base.ProcessAffliction(enemy);
     }
 }

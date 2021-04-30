@@ -18,10 +18,8 @@ public class DamageOverTime : Affliction
     public override void ProcessAffliction(GameObject enemy)
 	{
         if(currentTime < totalDuration
-            && ((int)(currentTime * 1000) % procFrequency) == 0) {
-            Debug.Log(currentTime);
+            && ((int)(currentTime * 1000) % procFrequency) == 0)
             enemy.GetComponent<Enemy>().TakeDamage(fireDamageOverTime);
-		}
 
         base.ProcessAffliction(enemy);
     }
